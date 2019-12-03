@@ -133,7 +133,7 @@ Section "libptrace" SecPtrace
     File "ChangeLog"
     File "COPYING"
     File "COPYING.LESSER"
-    File "README"
+    File "README.md"
 
     ; Store installation directory.
     WriteRegStr HKLM "Software\${PRODUCT_PUBLISHER}\${PRODUCT_NAME}" "" $INSTDIR
