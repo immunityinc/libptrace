@@ -44,18 +44,23 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 if (SIZEOF_VOID_P EQUAL 8)
-	link_directories(${PROJECT_SOURCE_DIR}/lib64)
+	link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib64)
 elseif (SIZEOF_VOID_P EQUAL 4)
-	link_directories(${PROJECT_SOURCE_DIR}/lib)
+	link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 else()
 	message(FATAL_ERROR, "Unsupported processor.")
 endif()
 
-set(SOURCES breakpoint.c breakpoint.h breakpoint_sw.c core.c core.h
-            utils.c utils.h
+set(SOURCES breakpoint.c breakpoint.h breakpoint_sw.c compat.c compat.h
+            core.c core.h utils.c utils.h
             breakpoint_sw.h cconv.c cconv.h event.c event.h inject.c inject.h
             log.c log.h mmap.c mmap.h module.c module.h process.c process.h
             ptrace.c ptrace.h thread.c thread.h)
 
-add_library(pyptrace SHARED ${SOURCES})
-target_link_libraries(pyptrace python27.a ptrace)
+add_library(py27ptrace SHARED ${SOURCES})
+target_include_directories(py27ptrace PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/python2.7)
+target_link_libraries(py27ptrace python27.a ptrace)
+
+add_library(py37ptrace SHARED ${SOURCES})
+target_include_directories(py37ptrace PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/python3.7)
+target_link_libraries(py37ptrace python37.lib ptrace)

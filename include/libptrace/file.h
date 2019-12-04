@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_FILE_H
-#define __LIBPTRACE_FILE_H
+#ifndef PT_FILE_H
+#define PT_FILE_H
 
 #include <stdio.h>
 #include <libptrace/charset.h>
@@ -145,4 +145,4 @@ extern const struct pt_file_operations pt_file_native_operations;
 extern const struct pt_file_operations pt_file_buffer_operations;
 extern const struct pt_file_operations pt_file_process_operations;
 
-#endif
+#endif	/* !PT_FILE_H */

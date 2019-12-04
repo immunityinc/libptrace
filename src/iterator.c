@@ -125,12 +125,24 @@ void pt_iterator_module_next(struct pt_iterator *_it)
 }
 
 struct pt_iterator
-pt_iterator_breakpoint_begin(struct pt_process *process)
+pt_iterator_breakpoint_begin_process(struct pt_process *process)
 {
 	struct pt_iterator _it;
 	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&_it;
 
 	it->an      = avl_tree_min(&process->breakpoints);
+	it->an_next = avl_tree_next_safe(it->an);
+
+	return _it;
+}
+
+struct pt_iterator
+pt_iterator_breakpoint_begin_thread(struct pt_thread *thread)
+{
+	struct pt_iterator _it;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&_it;
+
+	it->an      = avl_tree_min(&thread->breakpoints);
 	it->an_next = avl_tree_next_safe(it->an);
 
 	return _it;

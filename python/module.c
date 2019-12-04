@@ -42,6 +42,7 @@
  */
 #include <python/Python.h>
 #include <python/structmember.h>
+#include "compat.h"
 #include "module.h"
 #include "utils.h"
 
@@ -65,7 +66,7 @@ pypt_module_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
         self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject *)self);
+		Py_TYPE(self)->tp_free((PyObject *)self);
 		return NULL;
 	}
 
@@ -82,7 +83,7 @@ pypt_module_dealloc(struct pypt_module *self)
 	Py_XDECREF(self->process);
 	Py_XDECREF(self->dict);
 
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -200,15 +201,14 @@ static PyMemberDef pypt_module_members[] = {
 static PyObject *pypt_module__repr__(struct pypt_module *self)
 {
 	return PyString_FromFormat("<%s(%p) at %p as %s from %s>",
-				   self->ob_type->tp_name, self,
+				   Py_TYPE(self)->tp_name, self,
 				   (void *)self->module->base,
 				   self->module->name,
 				   self->module->pathname);
 }
 
 PyTypeObject pypt_module_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.module",			/* tp_name */
 	sizeof(struct pypt_module),		/* tp_basicsize */
 	0,					/* tp_itemsize */

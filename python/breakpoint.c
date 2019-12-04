@@ -43,7 +43,7 @@
 #include <python/Python.h>
 #include <python/structmember.h>
 #include <libptrace/breakpoint.h>
-
+#include "compat.h"
 #include "breakpoint.h"
 
 static int pypt_breakpoint_init(struct pypt_breakpoint *, PyObject *, PyObject *);
@@ -58,8 +58,7 @@ static PyMemberDef pypt_breakpoint_members[] = {
 };
 
 PyTypeObject pypt_breakpoint_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.breakpoint",			/* tp_name */
 	sizeof(struct pypt_breakpoint),		/* tp_basicsize */
 	0,					/* tp_itemsize */
@@ -121,6 +120,6 @@ pypt_breakpoint_init(struct pypt_breakpoint *self, PyObject *args, PyObject *kwd
 static PyObject *pypt_breakpoint__repr__(struct pypt_breakpoint *self)
 {
 	return PyString_FromFormat("<%s(%p) address:%p, handler:%p>",
-				   self->ob_type->tp_name, self,
-				   (void *)self->breakpoint.address, self->handler);
+		Py_TYPE(self)->tp_name, self,
+		(void *)self->breakpoint.address, self->handler);
 }

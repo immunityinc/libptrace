@@ -46,7 +46,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <libptrace/avl.h>
+#include "avl.h"
 
 struct interval_tree
 {

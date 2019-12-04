@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_TYPES_H
-#define __PT_TYPES_H
+#ifndef PT_TYPES_H
+#define PT_TYPES_H
 
 #include <stdint.h>
 
@@ -81,4 +81,4 @@ char *pt_address_sprintf(pt_address_t address);
 };
 #endif
 
-#endif
+#endif	/* !PT_TYPES_H */

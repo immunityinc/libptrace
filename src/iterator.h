@@ -43,8 +43,8 @@
 #ifndef __PT_ITERATOR_INTERNAL_H
 #define __PT_ITERATOR_INTERNAL_H
 
-#include <libptrace/avl.h>
 #include <libptrace/process.h>
+#include "avl.h"
 
 struct pt_iterator_process
 {

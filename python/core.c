@@ -45,6 +45,7 @@
 #include <python/structmember.h>
 #include <libptrace/error.h>
 #include <libptrace/factory.h>
+#include "compat.h"
 #include "core.h"
 #include "ptrace.h"
 #include "thread.h"
@@ -76,7 +77,7 @@ pypt_core_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 		return NULL;
 
 	if ( (self->dict = PyDict_New()) == NULL) {
-		self->ob_type->tp_free((PyObject*)self);
+		Py_TYPE(self)->tp_free((PyObject*)self);
 		return NULL;
 	}
 
@@ -89,7 +90,7 @@ static void
 pypt_core_dealloc(struct pypt_core *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -108,15 +109,13 @@ pypt_core_options_set(struct pypt_core *self, PyObject *value, void *closure)
 		return -1;
 	}
 
-	if (PyInt_Check(value)) {
-                options = PyInt_AsLong(value);
-	} else if (PyLong_Check(value)) {
-		options = PyLong_AsLong(value);
-	} else {
-		PyErr_SetString(PyExc_TypeError, "'value' must be an integer type.");
+	if (!py_num_check(value)) {
+		PyErr_SetString(PyExc_TypeError,
+		                "'value' must be an integer type.");
 		return -1;
 	}
 
+	options = py_num_to_long(value);
 	if (options == -1 && PyErr_Occurred())
 		return -1;
 
@@ -125,7 +124,8 @@ pypt_core_options_set(struct pypt_core *self, PyObject *value, void *closure)
 	return 0;
 }
 
-PyObject *__process_to_handle(struct pt_process *process)
+static PyObject *
+process_to_handle(struct pt_process *process)
 {
 	PyObject *creation_time;
 	PyObject *handle = NULL;
@@ -164,7 +164,8 @@ out:
 	return handle;
 }
 
-pt_handle_t __pyhandle_to_handle(PyObject *ph)
+pt_handle_t
+pyhandle_to_handle(PyObject *ph)
 {
 	pt_handle_process_t *process_handle;
 	pt_handle_t handle;
@@ -173,7 +174,7 @@ pt_handle_t __pyhandle_to_handle(PyObject *ph)
 
 	process_handle = (pt_handle_process_t *)&handle;
 
-	mask = PyLong_FromUnsignedLongLong(0xFFFFFFFFFFFFFFFFULL);
+	mask = PyLong_FromUnsignedLongLong((unsigned long long)-1);
 	if (mask == NULL)
 		return PT_HANDLE_NULL;
 
@@ -261,7 +262,7 @@ PyObject *pypt_core_process_attach(struct pypt_core *self, PyObject *args)
 	process->__super = pyprocess;
 
 	/* XXX: error check. */
-	return __process_to_handle(process);
+	return process_to_handle(process);
 }
 
 PyObject *pypt_core_process_attach_remote(struct pypt_core *self, PyObject *args)
@@ -324,7 +325,7 @@ PyObject *pypt_core_process_detach_remote(struct pypt_core *self, PyObject *args
 		return NULL;
 	}
 
-	handle = __pyhandle_to_handle(object);
+	handle = pyhandle_to_handle(object);
 
 	if (pt_core_process_detach_remote(self->core, handle) == -1) {
 		PyErr_SetString(pypt_exception, pt_error_strerror());
@@ -370,7 +371,7 @@ PyObject *pypt_core_process_break_remote(struct pypt_core *self, PyObject *args)
 		return NULL;
 	}
 
-	handle = __pyhandle_to_handle(object);
+	handle = pyhandle_to_handle(object);
 
 	if (pt_core_process_break_remote(self->core, handle) == -1) {
 		PyErr_SetString(pypt_exception, pt_error_strerror());
@@ -423,12 +424,12 @@ PyObject *pypt_core_execv(struct pypt_core *self, PyObject *args)
 		if ( (item = PyList_GetItem(pyargv, i)) == NULL)
 			goto err_argv;
 
-		if (!PyString_Check(item)) {
+		if (!py_string_check(item)) {
 			PyErr_SetString(PyExc_TypeError, "Expected a string.");
 			goto err_argv;
 		}
 
-		if ( (argv[i] = PyString_AsString(item)) == NULL)
+		if ( (argv[i] = py_string_to_utf8(item)) == NULL)
 			goto err_argv;
 	}
 	argv[i] = NULL;
@@ -470,8 +471,11 @@ PyObject *pypt_core_execv(struct pypt_core *self, PyObject *args)
 	}
 
         Py_BEGIN_ALLOW_THREADS
-	process = self->core->c_op->execv(self->core, pathname, argv, &handlers, options);
+	process = self->core->c_op->execv(self->core, pathname, (char * const *)argv, &handlers, options);
 	Py_END_ALLOW_THREADS
+
+	while (i-- > 0)
+		free(argv[i]);
 	free(argv);
 
 	if (process == NULL) {
@@ -480,11 +484,14 @@ PyObject *pypt_core_execv(struct pypt_core *self, PyObject *args)
 	}
 
 	pyprocess->process = process;
-	process->__super = pyprocess;
+	process->__super   = pyprocess;
 
-	return __process_to_handle(process);
+	return process_to_handle(process);
 
 err_argv:
+	while (i-- > 0)
+		free(argv[i]);
+
 	free(argv);
 err:
 	return NULL;
@@ -507,7 +514,7 @@ PyObject *pypt_core_quit(struct pypt_core *self, PyObject *args)
 
 static PyObject *pypt_core__repr__(struct pypt_core *self)
 {
-	return PyString_FromFormat("<%s(%p)>", self->ob_type->tp_name, self);
+	return PyString_FromFormat("<%s(%p)>", Py_TYPE(self)->tp_name, self);
 }
 
 static PyGetSetDef pypt_core_getset[] = {
@@ -537,8 +544,7 @@ static PyMemberDef pypt_core_members[] = {
 };
 
 PyTypeObject pypt_core_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.core",				/* tp_name */
 	sizeof(struct pypt_core),		/* tp_basicsize */
 	0,					/* tp_itemsize */

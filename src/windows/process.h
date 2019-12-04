@@ -44,9 +44,9 @@
 #define __LIBPTRACE_WINDOWS_PROCESS_INTERNAL_H
 
 #include <windows.h>
-#include <libptrace/avl.h>
 #include <libptrace/event.h>
 #include <libptrace/module.h>
+#include "../avl.h"
 #include "../process.h"
 #include "thread.h"
 

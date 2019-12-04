@@ -45,6 +45,7 @@
 #include <libptrace/error.h>
 #include "../src/windows/process.h"
 
+#include "compat.h"
 #include "breakpoint.h"
 #include "event.h"
 #include "module.h"
@@ -124,7 +125,7 @@ err_threads:
 err_dict:
 	Py_DECREF(self->dict);
 err_free:
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 err:
 	return NULL;
 }
@@ -133,7 +134,7 @@ static void
 pypt_process_dealloc(struct pypt_process *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -256,7 +257,7 @@ pypt_process_read(struct pypt_process *self, PyObject *args)
 		return NULL;
 	}
 
-	object = PyString_FromStringAndSize(p, size);
+	object = PyBytes_FromStringAndSize(p, size);
 	free(p);
 
 	return object;
@@ -512,14 +513,13 @@ static char *__process_state[] = {
 static PyObject *pypt_process__repr__(struct pypt_process *self)
 {
 	return PyString_FromFormat("<%s(%p) pid:%d %s>",
-				   self->ob_type->tp_name, self,
+				   Py_TYPE(self)->tp_name, self,
 				   pt_process_pid_get(self->process),
 				   __process_state[self->process->state]);
 }
 
 PyTypeObject pypt_process_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.process",			/* tp_name */
 	sizeof(struct pypt_process),		/* tp_basicsize */
 	0,					/* tp_itemsize */

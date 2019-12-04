@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_ITERATOR_H
-#define __PT_ITERATOR_H
+#ifndef PT_ITERATOR_H
+#define PT_ITERATOR_H
 
 struct pt_core;
 struct pt_process;
@@ -48,7 +48,7 @@ struct pt_thread;
 
 struct pt_iterator
 {
-	void *__private[3];
+	void *private__[3];
 };
 
 #ifdef __cplusplus
@@ -70,7 +70,8 @@ int                    pt_iterator_module_end(struct pt_iterator *);
 void                   pt_iterator_module_next(struct pt_iterator *);
 struct pt_module *     pt_iterator_module_get(struct pt_iterator *);
 
-struct pt_iterator     pt_iterator_breakpoint_begin(struct pt_process *);
+struct pt_iterator     pt_iterator_breakpoint_begin_process(struct pt_process *);
+struct pt_iterator     pt_iterator_breakpoint_begin_thread(struct pt_thread *);
 int                    pt_iterator_breakpoint_end(struct pt_iterator *);
 void                   pt_iterator_breakpoint_next(struct pt_iterator *);
 struct pt_breakpoint * pt_iterator_breakpoint_get(struct pt_iterator *);
@@ -79,4 +80,4 @@ struct pt_breakpoint * pt_iterator_breakpoint_get(struct pt_iterator *);
 };
 #endif
 
-#endif
+#endif	/* !PT_ITERATOR_H */

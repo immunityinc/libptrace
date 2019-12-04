@@ -44,7 +44,7 @@
 #include <stdio.h>
 #include <python/Python.h>
 #include <python/structmember.h>
-
+#include "compat.h"
 #include "log.h"
 #include "utils.h"
 
@@ -86,7 +86,7 @@ static void __pypt_log_hook_handler(void *cookie, const char *fmt, va_list va)
 	/* XXX: change 'replace' to 'strict' once we support handler
          * exceptions properly.
 	 */
-	pystr = PyString_Decode(str, ret, "utf-8", "replace");
+	pystr = PyUnicode_Decode(str, ret, "utf-8", "replace");
 	if (pystr == NULL)
 		goto end_free;
 
@@ -153,7 +153,7 @@ pypt_log_hook_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject *)self);
+		Py_TYPE(self)->tp_free((PyObject *)self);
 		return NULL;
 	}
 
@@ -164,19 +164,18 @@ static void
 pypt_log_hook_dealloc(struct pypt_log_hook *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *pypt_log_hook__repr__(struct pypt_log_hook *self)
 {
 	return PyString_FromFormat("<%s(%p) handler:%p cookie:%p>",
-				   self->ob_type->tp_name, self,
+				   Py_TYPE(self)->tp_name, self,
 	                           self->handler, self->cookie);
 }
 
 PyTypeObject pypt_log_hook_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.log_hook",			/* tp_name */
 	sizeof(struct pypt_log_hook),		/* tp_basicsize */
 	0,					/* tp_itemsize */

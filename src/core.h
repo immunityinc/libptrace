@@ -45,6 +45,7 @@
 #include <libptrace/charset.h>
 #include <libptrace/process.h>
 #include <libptrace/types.h>
+#include "avl.h"
 #include "queue.h"
 
 struct pt_core;

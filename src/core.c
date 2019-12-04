@@ -43,9 +43,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <signal.h>
-#include <libptrace/avl.h>
 #include <libptrace/error.h>
 #include <libptrace/util.h>
+#include "avl.h"
 #include "core.h"
 #include "compat.h"
 #include "handle.h"
@@ -165,16 +165,6 @@ void pt_core_quit(struct pt_core *core)
 void pt_quit(void)
 {
 	pt_core_quit(&__pt_core_main);
-}
-
-struct avl_tree *pt_core_process_tree_get(struct pt_core *core)
-{
-	return &core->process_tree;
-}
-
-struct avl_tree *pt_process_tree_get(void)
-{
-	return pt_core_process_tree_get(&__pt_core_main);
 }
 
 static inline int __main_loop_done(struct pt_core *core, int ret)

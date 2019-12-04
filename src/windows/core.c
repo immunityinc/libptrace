@@ -504,8 +504,10 @@ struct pt_process *pt_windows_core_exec(
 	pt_log("%s(): Process created with PID %d; attaching...\n",
 	       __FUNCTION__, procinfo.dwProcessId);
 	process = pt_windows_core_process_attach(core, procinfo.dwProcessId, handlers, options);
-	if (process == NULL)
+	if (process == NULL) {
+		pt_log("%s(): Failed to attach.\n", __FUNCTION__);
 		TerminateProcess(procinfo.hProcess, 0);
+	}
 
 	ResumeThread(procinfo.hThread);
 	CloseHandle(procinfo.hThread);
@@ -670,7 +672,7 @@ pt_windows_core_process_attach(
 	struct pt_process *process;
 	FILETIME ct, et, kt, ut;
 	HANDLE process_handle;
-	BOOL wow64;
+	BOOL wow64 = FALSE;
 	BOOL ret;
 
 	/* Set debug privileges.  In case of failure, we try to continue
@@ -679,13 +681,19 @@ pt_windows_core_process_attach(
 	token_add_privilege(SE_DEBUG_NAME);
 
 	if ( (process_handle = OpenProcess(access, FALSE, pid)) == NULL) {
+		pt_log("%s(): OpenProcess failed.\n", __FUNCTION__);
 		pt_windows_error_winapi_set();
 		goto err;
 	}
 
+#if __x86_64__
 	/* See if we're dealing with a WoW64 process. */
 	if (pt_windows_api_is_wow64_process(process_handle, &wow64) == -1)
 		goto err_handle;
+#endif
+
+	pt_log("%s() WoW64 process: %s\n", __FUNCTION__,
+		wow64 == TRUE ? "true" : "false");
 
 	/* Create the new process structure. */
 	if (wow64 == TRUE)
@@ -699,11 +707,14 @@ pt_windows_core_process_attach(
 	/* Initialize the handlers and options. */
 	if (__process_handlers_init(process, handlers) == -1)
 		goto err_process;
+
 	process->options = options;
 
 	/* Enable a debugger to attach to the process and debug it. */
-	if (pt_windows_api_nt_debug_active_process(process_handle, h) == -1)
+	if (pt_windows_api_nt_debug_active_process(process_handle, h) == -1) {
+		pt_log("%s(): failed to debug active process.\n", __FUNCTION__);
 		goto err_process;
+	}
 
 	/* Break in remotely. */
 	if (DebugBreakProcess(process_handle) == 0) {
@@ -788,6 +799,7 @@ __get_dll_name(struct pt_process *process, struct pt_module *module)
 	if (name_nt == NULL) {
 		pt_log("%s(): __get_dll_nt_name_by_map() failed: %s.\n",
 			__FUNCTION__, pt_error_strerror());
+
 		name_nt = __get_dll_name_by_handle(process, module);
 		if (name_nt == NULL) {
 			pt_log("%s(): __get_dll_name_by_handle() failed: %s.\n",
@@ -795,6 +807,8 @@ __get_dll_name(struct pt_process *process, struct pt_module *module)
 			return NULL;
 		}
 	}
+
+	pt_log("%s(): NT name: %s\n", __FUNCTION__, name_nt);
 
 	name_dos = pathname_nt_to_dos(name_nt);
 	if (name_dos == NULL) {

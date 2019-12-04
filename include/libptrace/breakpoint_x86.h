@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __BREAKPOINT_X86_H
-#define __BREAKPOINT_X86_H
+#ifndef BREAKPOINT_X86_H
+#define BREAKPOINT_X86_H
 
 #include <stdint.h>
 #include <libptrace/list.h>
@@ -67,7 +67,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	/* __cplusplus */
+#endif
 
 struct x86_debug_register;
 typedef void (*x86_dr_handler_t)(struct pt_process *, void *cookie);
@@ -101,6 +101,6 @@ x86_debug_register_find(struct x86_debug_registers *ctx, pt_address_t address, i
 
 #ifdef __cplusplus
 };
-#endif	/* __cplusplus */
+#endif
 
-#endif	/* !__BREAKPOINT_X86_H */
+#endif	/* !BREAKPOINT_X86_H */

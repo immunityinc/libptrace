@@ -47,6 +47,7 @@
 #include <libptrace/error.h>
 #include "../src/windows/cconv.h"
 
+#include "compat.h"
 #include "cconv.h"
 #include "thread.h"
 #include "utils.h"
@@ -71,7 +72,7 @@ pypt_cconv_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject *)self);
+		Py_TYPE(self)->tp_free((PyObject *)self);
 		return NULL;
 	}
 
@@ -82,7 +83,7 @@ static void
 pypt_cconv_dealloc(struct pypt_cconv *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static const char __fmt_valid[] = "diulpz";
@@ -247,8 +248,7 @@ static PyMemberDef pypt_cconv_members[] = {
 };
 
 PyTypeObject pypt_cconv_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.cconv",		        /* tp_name */
 	sizeof(struct pypt_cconv),		/* tp_basicsize */
 	0,					/* tp_itemsize */

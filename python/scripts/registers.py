@@ -38,23 +38,24 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
+from six import iteritems
 import sys
 import signal
-import struct
 import _ptrace
 import argparse
 
 def attached_handler(process):
     for thread in process.threads:
-        print "T%d" % thread.id
-        for k, v in thread.registers.iteritems():
-            print "%s: 0x%x" % (k, v)
+        print("T{}".format(thread.id))
+        for k, v in iteritems(thread.registers):
+            print("{}: 0x{:x}".format(k, v))
 
 def break_handler(signum, frame):
     _ptrace.quit();
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 parser = argparse.ArgumentParser(description='Dump registers of a process.')
 parser.add_argument('file', nargs='?', metavar='filename', help='executable to dump.')

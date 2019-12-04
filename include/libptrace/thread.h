@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_THREAD_H
-#define __PT_THREAD_H
+#ifndef PT_THREAD_H
+#define PT_THREAD_H
 
 #include <libptrace/breakpoint.h>
 #include <libptrace/breakpoint_x86.h>
@@ -59,32 +59,21 @@
 #define THREAD_FLAG_SINGLE_STEP_INTERNAL	8
 #define THREAD_FLAG_HW_BREAKPOINT		16
 
-#define pt_thread_for_each_dbreg(p, d)					\
-	for (int __i__ = 0; d = &((p)->debug_registers.regs[__i__]),	\
-	     __i__ < 4; __i__++)
+#define pt_thread_for_each_dbreg(p, d)                                        \
+	for (int i = 0; d = &((p)->debug_registers.regs[i]), i < 4; i++)
 
-#define pt_thread_for_each_breakpoint_internal(p, m)			\
-	for (struct avl_node *an = avl_tree_min(&(p)->breakpoints),	\
-	     *an2 = avl_tree_next_safe(an);				\
-	     m = container_of(an, struct pt_breakpoint_internal,	\
-	                      avl_node),				\
-	     an != NULL;						\
-	     an = an2, an2 = avl_tree_next_safe(an))
-
-#define pt_thread_for_each_breakpoint(p, m)				\
-	for (struct avl_node *an = avl_tree_min(&(p)->breakpoints),	\
-	     *an2 = avl_tree_next_safe(an);				\
-	     m = container_of(an, struct pt_breakpoint_internal,	\
-	                      avl_node)->breakpoint,			\
-	     an != NULL;						\
-	     an = an2, an2 = avl_tree_next_safe(an))
+#define pt_thread_for_each_breakpoint(p, b)                                   \
+        for (struct pt_iterator i = pt_iterator_breakpoint_begin_thread(p);   \
+             (b) = pt_iterator_breakpoint_get(&i),                            \
+             !pt_iterator_breakpoint_end(&i);                                 \
+             pt_iterator_breakpoint_next(&i))
 
 struct pt_thread;
 typedef uint32_t pt_tid_t;
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif
 
 void pt_thread_init(struct pt_thread *);
 int  pt_thread_destroy(struct pt_thread *);
@@ -116,6 +105,6 @@ pt_address_t pt_thread_register_pc_get(struct pt_thread *);
 
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
+#endif
 
-#endif /* !__LIBPTRACE_THREAD_H */
+#endif /* !PT_THREAD_H */

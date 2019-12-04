@@ -38,15 +38,15 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_HANDLE_H
-#define __PT_HANDLE_H
+#ifndef PT_HANDLE_H
+#define PT_HANDLE_H
 
 #include <stdint.h>
 
 typedef struct pt_handle
 {
-	uint64_t __priv_h1;
-	uint64_t __priv_h2;
+	uint64_t priv_h1__;
+	uint64_t priv_h2__;
 } pt_handle_t;
 
 #define PT_HANDLE_NULL		((pt_handle_t){ 0, 0 })
@@ -61,4 +61,4 @@ int pt_handle_valid(pt_handle_t);
 };
 #endif
 
-#endif
+#endif	/* !PT_HANDLE_H */

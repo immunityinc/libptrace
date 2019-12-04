@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_ERROR_H
-#define __PT_ERROR_H
+#ifndef PT_ERROR_H
+#define PT_ERROR_H
 
 #define PT_ERROR_NONE		0	/* No error */
 #define PT_ERROR_EXITED		1	/* Remote process exited */
@@ -98,4 +98,4 @@ int		pt_error_is_set(void);
 };
 #endif
 
-#endif
+#endif	/* !PT_ERROR_H */

@@ -41,8 +41,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_ARCH_H
-#define __LIBPTRACE_ARCH_H
+#ifndef PT_ARCH_INTERNAL_H
+#define PT_ARCH_INTERNAL_H
 
 #define PT_ARCH_I386		1
 #define PT_ARCH_X86_64		2
@@ -74,4 +74,4 @@ struct pt_arch_data_x86_64
 	struct pt_thread_x86_64_operations	*t_op;
 };
 
-#endif
+#endif	/* !PT_ARCH_INTERNAL_H */

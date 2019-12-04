@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_UTIL_H
-#define __PT_UTIL_H
+#ifndef PT_UTIL_H
+#define PT_UTIL_H
 
 #include <libptrace/types.h>
 
@@ -55,4 +55,4 @@ pt_tid_t pt_util_tid_get(void);
 };
 #endif
 
-#endif
+#endif	/* !PT_UTIL_H */

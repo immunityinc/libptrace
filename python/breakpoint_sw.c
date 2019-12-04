@@ -44,6 +44,7 @@
 #include <python/structmember.h>
 #include "../src/thread.h"
 
+#include "compat.h"
 #include "breakpoint.h"
 #include "breakpoint_sw.h"
 #include "thread.h"
@@ -86,11 +87,6 @@ __pypt_breakpoint_sw_handler(struct pt_thread *pt_thread, void *cookie)
 	PyGILState_Release(gstate);
 }
 
-static inline int __is_int(PyObject *obj)
-{
-	return PyInt_Check(obj) || PyLong_Check(obj);
-}
-
 static int
 pypt_breakpoint_sw_init(struct pypt_breakpoint_sw *self, PyObject *args, PyObject *kwds)
 {
@@ -103,7 +99,7 @@ pypt_breakpoint_sw_init(struct pypt_breakpoint_sw *self, PyObject *args, PyObjec
 	                                 kwlist, &symbol, &handler))
 		return -1;
 
-	if (!__is_int(symbol) && !PyString_Check(symbol)) {
+	if (!py_num_check(symbol) && !py_string_check(symbol)) {
 		PyErr_SetString(PyExc_TypeError, "'symbol' must be an integer or a string");
 		return -1;
 	}
@@ -121,28 +117,17 @@ pypt_breakpoint_sw_init(struct pypt_breakpoint_sw *self, PyObject *args, PyObjec
 	self->breakpoint.cookie = self;
 
 	/* Depending on the type we got, initialize address or symbol. */
-	if (PyInt_Check(symbol)) {
-		address = PyInt_AsLong(symbol);
-		if (address == -1 && PyErr_Occurred())
+	if (py_num_check(symbol)) {
+		address = py_num_to_ulonglong(symbol);
+		if (address == (unsigned long long)-1 && PyErr_Occurred())
 			return -1;
 
 		self->breakpoint.address = (pt_address_t)address;
-	} else if (PyLong_Check(symbol)) {
-		address = PyLong_AsUnsignedLongLong(symbol);
-		if (address == -1 && PyErr_Occurred())
+	} else {
+		/* breakpoint.symbol takes ownership of malloced string. */
+		self->breakpoint.symbol = py_string_to_utf8(symbol);
+		if (self->breakpoint.symbol == NULL)
 			return -1;
-
-		self->breakpoint.address = (pt_address_t)address;
-	} else if (PyString_Check(symbol)) {
-		char *s = PyString_AsString(symbol);
-
-		if (s == NULL)
-			return -1;
-
-		if ( (self->breakpoint.symbol = strdup(s)) == NULL) {
-			PyErr_SetString(PyExc_MemoryError, "'strdup' failed");
-			return -1;
-		}
 	}
 
 	/* Initialize the python structure. */
@@ -164,7 +149,7 @@ pypt_breakpoint_sw_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject *)self);
+		Py_TYPE(self)->tp_free((PyObject *)self);
 		return NULL;
 	}
 
@@ -176,14 +161,13 @@ pypt_breakpoint_sw_dealloc(struct pypt_breakpoint_sw *self)
 {
 	Py_XDECREF(self->handler);
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 
 
 PyTypeObject pypt_breakpoint_sw_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					   /* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.breakpoint_sw",		   /* tp_name */
 	sizeof(struct pypt_breakpoint_sw),	   /* tp_basicsize */
 	0,					   /* tp_itemsize */

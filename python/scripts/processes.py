@@ -40,26 +40,26 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def p1_attached(process):
-    print "attached to %d" % process.id
-    print _ptrace.processes()
+    print("attached to {}".format(process.id))
+    print(_ptrace.processes())
     process.detach()
 
 def p2_attached(process):
-    print "attached to %d" % process.id
-    print _ptrace.processes()
+    print("attached to {}".format(process.id))
+    print(_ptrace.processes())
 
 def exited(process):
-    print "%d exited" % process.id
-    print _ptrace.processes()
+    print("{} exited".format(process.id))
+    print(_ptrace.processes())
 
 parser = argparse.ArgumentParser(description='Processes demonstration script.')
 parser.add_argument('--debug', '-d', action='store_true')

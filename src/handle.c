@@ -49,7 +49,7 @@ _Static_assert(sizeof(struct pt_handle_process) <= sizeof(struct pt_handle),
 
 int pt_handle_valid(pt_handle_t handle)
 {
-	return handle.__priv_h1 == 0 && handle.__priv_h2 == 0;
+	return handle.priv_h1__ == 0 && handle.priv_h2__ == 0;
 }
 
 struct pt_process *

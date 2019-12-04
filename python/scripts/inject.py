@@ -38,27 +38,26 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import signal
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def inject_pre(process, cookie):
-    print "Preparing to run code in process %d" % process.id
+    print("Preparing to run code in process {}".format(process.id))
 
 def inject_post(process, cookie):
-    print "Ran code in process %d" % process.id
+    print("Ran code in process {}".format(process.id))
 
 def attached(process):
-    print "Process with PID %d created" % process.id
+    print("Process with PID {} created".format(process.id))
 
     inject              = _ptrace.inject()
-    inject.data         = "\x31\xc0\xc3" # xor eax, eax ; ret
-    inject.argument     = ""
+    inject.data         = b"\x31\xc0\xc3" # xor eax, eax ; ret
+    inject.argument     = b""
     inject.handler_pre  = inject_pre
     inject.handler_post = inject_post
 

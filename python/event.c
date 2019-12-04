@@ -44,6 +44,7 @@
 #include <python/structmember.h>
 
 #include <libptrace/event.h>
+#include "compat.h"
 #include "event.h"
 #include "module.h"
 #include "thread.h"
@@ -684,7 +685,7 @@ pypt_event_handlers_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 	self->dict = PyDict_New();
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject*)self);
+		Py_TYPE(self)->tp_free((PyObject*)self);
 		return NULL;
 	}
 
@@ -710,7 +711,7 @@ static void
 pypt_event_handlers_dealloc(struct pypt_event_handlers *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject*)self);
+	Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static int
@@ -732,7 +733,7 @@ static PyObject *pypt_event_handlers__repr__(struct pypt_event_handlers *self)
 				   "  segfault:%p illegal_instruction:%p\n"
 				   "  divide_by_zero:%p priv_instruction:%p\n"
 				   "  unknown_exception:%p\n",
-				   self->ob_type->tp_name, self,
+				   Py_TYPE(self)->tp_name, self,
 				   NULL_OR_PY_NONE(self->attached),
 				   NULL_OR_PY_NONE(self->process_exit),
 				   NULL_OR_PY_NONE(self->thread_create),
@@ -750,8 +751,7 @@ static PyObject *pypt_event_handlers__repr__(struct pypt_event_handlers *self)
 }
 
 PyTypeObject pypt_event_handlers_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					    /* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.event_handlers",		    /* tp_name */
 	sizeof(struct pypt_event_handlers),	    /* tp_basicsize */
 	0,					    /* tp_itemsize */

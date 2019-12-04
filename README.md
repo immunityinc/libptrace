@@ -1,7 +1,8 @@
 # libptrace
 
 libptrace is an event driven process/thread debugging, tracing, and
-manipulation framework.  It is written in C and has Python 2.7 bindings.
+manipulation framework.  It is written in C and has Python 2.7 and 3.7
+bindings.
 
 It is meant to be used as a library.  The API has been designed with
 cross-platform support in mind.  Although the current version only runs on 32-
@@ -27,7 +28,7 @@ grateful to have been able to actively develop on it during my working hours
 and see the framework become more mature.  I redesigned most of it to be aware
 of multiple cores, to provide Python bindings, and create better abstractions.
 
-With the eventual release of x86dbg it was decided we would no longer work on
+With the eventual release of x64dbg it was decided we would no longer work on
 Immunity Debugger, and instead focus our efforts on other things.  This also
 stalled libptrace development, and for the following years it collected dust in
 the internal git repository, until after the acquisition of Immunity Inc. by
@@ -80,15 +81,14 @@ makensis -DUSE64 libptrace-setup.nsi
 
 ## Installation
 
-**WARNING** when using the installer please do not change the
-`Immunity Inc\libptrace` part of the destination path.  When installed to a
-non-dedicated directory this will cause the uninstaller to delete the whole
-directory, including other files and subdirectories, as it will simply
-`RMDir /r` the installation directory.  This fragility will be fixed later.
-
 After following the build steps above, the 32-bit installer will be at
 `libptrace-setup32.exe` and the 64-bit installer will be at
 `libptrace-setup64.exe`.
+
+The installer will automatically determine what versions of Python are
+installed and whether they are 32-bit or 64-bit.  The versions that were found
+will be offered by the installer, and versions that were not found will be
+grayed out.
 
 Release downloads can be found
 [here](https://github.com/immunityinc/libptrace/releases).
@@ -123,8 +123,8 @@ import _ptrace
 def bp_handler(bp, thread):
     (key, subkey, options, sam, result) = _ptrace.cconv.args_get(thread, "%u%p%u%u%p")
     subkey = thread.process.read_utf16(subkey)
-    print "T%d: RegOpenKeyEx(%s, \"%s\", 0x%08x, 0x%08x, 0x%08x)" % \
-        (thread.id, key, subkey, options, sam, result),
+    print('T{}: RegOpenKeyEx({}, "{}", 0x{:08x}, 0x{:08x}, 0x{:08x})'
+          .format(thread.id, key, subkey, options, sam, result), end='')
 
 def attached_handler(process):
     bp = _ptrace.breakpoint_sw("advapi32!RegOpenKeyExW", bp_handler)
@@ -142,17 +142,17 @@ a breakpoint on the return address of the function call.  This avoids the
 need for code analysis to determine function exit paths statically:
 ```
 def bp_end_handler(bp, thread):
-    print "= %d" % _ptrace.cconv.retval_get(thread)
+    print("=", _ptrace.cconv.retval_get(thread))
 
 def bp_handler(bp, thread):
     (key, subkey, options, sam, result) = _ptrace.cconv.args_get(thread, "%u%p%u%u%p")
     subkey = thread.process.read_utf16(subkey)
-    print "T%d: RegOpenKeyEx(%s, \"%s\", 0x%08x, 0x%08x, 0x%08x)" % \
-        (thread.id, key, subkey, options, sam, result),
+    print('T{}: RegOpenKeyEx({}, "{}", 0x{:08x}, 0x{:08x}, 0x{:08x})'
+          .format(thread.id, key, subkey, options, sam, result), end='')
 
     retaddr = _ptrace.cconv.retaddr_get(thread)
     if thread.process.breakpoint_find(retaddr) is None:
-        bp_end  = _ptrace.breakpoint_sw(retaddr, bp_end_handler)
+        bp_end = _ptrace.breakpoint_sw(retaddr, bp_end_handler)
         thread.process.breakpoint_set(bp_end)
 ```
 

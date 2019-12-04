@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_CORE_H
-#define __PT_CORE_H
+#ifndef PT_CORE_H
+#define PT_CORE_H
 
 #include <libptrace/charset.h>
 #include <libptrace/event.h>
@@ -63,7 +63,7 @@ struct pt_core;
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif
 
 void			pt_core_delete(struct pt_core *);
 
@@ -79,7 +79,6 @@ int			pt_core_process_break(struct pt_core *, struct pt_process *);
 int			pt_core_process_break_remote(struct pt_core *, pt_handle_t);
 
 void			pt_core_quit(struct pt_core *);
-struct avl_tree   *	pt_core_process_tree_get(struct pt_core *);
 int			pt_core_main(struct pt_core *);
 int			pt_core_event_wait(struct pt_core *);
 pt_handle_t		pt_core_execv(struct pt_core *, const utf8_t *, utf8_t *const [], struct pt_event_handlers *, int);
@@ -91,7 +90,6 @@ int			pt_process_detach(struct pt_process *);
 int			pt_process_detach_remote(pt_handle_t);
 
 void			pt_quit(void);
-struct avl_tree   *	pt_process_tree_get(void);
 int			pt_main(void);
 int			pt_event_wait(void);
 pt_handle_t		pt_execv(const utf8_t *, utf8_t *const [], struct pt_event_handlers *, int);
@@ -99,6 +97,6 @@ pt_handle_t		pt_execv_remote(const utf8_t *, utf8_t *const [], struct pt_event_h
 
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
+#endif
 
-#endif	/* !__PT_CORE_H */
+#endif	/* !PT_CORE_H */

@@ -40,18 +40,17 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import time
-import struct
 import _ptrace
 import argparse
 import threading
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def attached(process):
-    print "attached to process %d" % process.id
+    print("attached to process {}".format(process.id))
 
 def core_handler(args):
     core = _ptrace.core(_ptrace.CORE_WINDOWS)

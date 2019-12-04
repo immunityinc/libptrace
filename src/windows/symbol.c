@@ -44,8 +44,8 @@
 #include <assert.h>
 #include <windows.h>
 #include <libptrace/log.h>
-#include <libptrace/avl.h>
 #include <libptrace/windows/error.h>
+#include "../avl.h"
 #include "process.h"
 #include "symbol.h"
 #include "module.h"

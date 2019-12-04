@@ -40,19 +40,19 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_BREAKPOINT_SW_H
-#define __LIBPTRACE_BREAKPOINT_SW_H
+#ifndef PT_BREAKPOINT_SW_INTERNAL_H
+#define PT_BREAKPOINT_SW_INTERNAL_H
 
 #include <libptrace/breakpoint.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif	/* __cplusplus */
+#endif
 
 void pt_breakpoint_sw_init(struct pt_breakpoint *bp);
 
 #ifdef __cplusplus
 };
-#endif	/* __cplusplus */
+#endif
 
-#endif	/* !__LIBPTRACE_BREAKPOINT_SW_H */
+#endif	/* !PT_BREAKPOINT_SW_INTERNAL_H */

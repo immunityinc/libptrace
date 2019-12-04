@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_CONDVAR_H
-#define __PT_CONDVAR_H
+#ifndef PT_CONDVAR_INTERNAL_H
+#define PT_CONDVAR_INTERNAL_H
 
 #include <pthread.h>
 #include "mutex.h"
@@ -76,4 +76,4 @@ pt_condvar_notify(pt_condvar_t *c)
 	return pthread_cond_signal(c);
 }
 
-#endif	/* !__PT_CONDVAR_H */
+#endif	/* !PT_CONDVAR_INTERNAL_H */

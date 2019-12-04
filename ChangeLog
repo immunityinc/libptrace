@@ -1,0 +1,17 @@
+libptrace 1.0-rc2
+===============================================================================
+
+Improvements
+
+- Python 3.7 support
+- Do not expose the avl tree on the public interface.
+- pt_iterator_breakpoint_begin() has now been split up in:
+    pt_iterator_breakpoint_begin_process()
+    pt_iterator_breakpoint_begin_thread()
+- Resolve issue #2 for the public header files.
+- Improve the installer.
+
+Bugfixes
+
+- Do not detect WoW64 processes when we've been built in 32-bit mode.
+- Fix a NULL deref when NtQueryObjectName returns a zero filled UNICODE_STRING.

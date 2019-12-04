@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_ERROR_H
-#define __LIBPTRACE_WINDOWS_ERROR_H
+#ifndef PT_WINDOWS_ERROR_H
+#define PT_WINDOWS_ERROR_H
 
 #include <windows.h>
 #include <libptrace/error.h>
@@ -74,4 +74,4 @@ void pt_windows_error_ole_set(HRESULT);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_ERROR_H */

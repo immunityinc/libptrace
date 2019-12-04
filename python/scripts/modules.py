@@ -38,17 +38,17 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def attached_handler(process):
     for module in process.modules:
-        print module.path
+        print(module.path)
 
 parser = argparse.ArgumentParser(description='Dump exports of modules.')
 parser.add_argument('file', nargs='?', metavar='filename', help='executable to dump.')

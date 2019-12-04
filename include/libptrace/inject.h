@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_INJECT_H
-#define __PT_INJECT_H
+#ifndef PT_INJECT_H
+#define PT_INJECT_H
 
 #include <libptrace/process.h>
 
@@ -66,4 +66,4 @@ int pt_inject(struct pt_inject *, struct pt_process *);
 };
 #endif
 
-#endif
+#endif	/* !PT_INJECT_H */

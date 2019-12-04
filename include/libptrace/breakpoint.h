@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_BREAKPOINT_H
-#define __PT_BREAKPOINT_H
+#ifndef PT_BREAKPOINT_H
+#define PT_BREAKPOINT_H
 
 #include <stdint.h>
 #include <libptrace/event.h>
@@ -58,7 +58,7 @@ typedef void (*pt_breakpoint_handler_t)(struct pt_thread *, void *cookie);
 
 #ifdef __cplusplus
 extern "C" {
-#endif	/* __cplusplus */
+#endif
 
 void pt_breakpoint_init(struct pt_breakpoint *);
 void pt_breakpoint_destroy(struct pt_breakpoint *);
@@ -70,4 +70,4 @@ int  pt_breakpoint_remove(struct pt_process *, struct pt_breakpoint *);
 };
 #endif
 
-#endif	/* !__PT_BREAKPOINT_H */
+#endif	/* !PT_BREAKPOINT_H */

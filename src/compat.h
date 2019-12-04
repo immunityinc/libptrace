@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_COMPAT_H
-#define __LIBPTRACE_COMPAT_H
+#ifndef PT_COMPAT_INTERNAL_H
+#define PT_COMPAT_INTERNAL_H
 
 #include <stddef.h>
 
@@ -57,4 +57,4 @@ int sstrncat(char *dest, const char *src, size_t size);
 };
 #endif
 
-#endif /* !__LIBPTRACE_COMPAT_H */
+#endif /* !PT_COMPAT_INTERNAL_H */

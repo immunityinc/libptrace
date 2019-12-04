@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_MODULE_H
-#define __PT_MODULE_H
+#ifndef PT_MODULE_H
+#define PT_MODULE_H
 
 #include <libptrace/types.h>
 
@@ -65,4 +65,4 @@ int pt_module_exports_get(struct pt_process *, struct pt_module *, struct pt_mod
 };
 #endif
 
-#endif
+#endif	/* !PT_MODULE_H */

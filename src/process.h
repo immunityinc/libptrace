@@ -47,11 +47,11 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <libptrace/avl.h>
 #include <libptrace/event.h>
 #include <libptrace/list.h>
 #include <libptrace/types.h>
 #include <libptrace/process.h>
+#include "avl.h"
 #include "arch.h"
 #include "event.h"
 #include "mutex.h"

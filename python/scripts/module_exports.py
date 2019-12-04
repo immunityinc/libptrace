@@ -38,22 +38,22 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def attached(process):
-    print "Process %d" % process.id
+    print("Process {}".format(process.id))
 
     for m in process.modules:
-        print "\n  %s\n" % m.path
+        print("\n  {}\n".format(m.path))
         for name, address in m.exports.items():
-            print "  * %s: 0x%.8x" % (name, address)
-        print
+            print("  * {}: 0x{:08x}".format(name, address))
+        print()
 
     _ptrace.quit()
 

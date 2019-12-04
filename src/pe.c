@@ -134,7 +134,7 @@ struct pe_img_opt_hdr_operations pe64_img_opt_hdr_operations = {
 
 static int __pe_write32(struct pe_context *pex, off_t offset, uint32_t dword)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	uint8_t buf[4];
 
 	/* Seek to the location of the 'subsystem' entry in the optional
@@ -160,7 +160,7 @@ static int __pe_write32(struct pe_context *pex, off_t offset, uint32_t dword)
 
 static int __pe_write16(struct pe_context *pex, off_t offset, uint16_t word)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	uint8_t buf[2];
 
 	/* Seek to the location of the 'subsystem' entry in the optional
@@ -191,7 +191,7 @@ const char *pe_errstr(int error)
 
 static inline void __pe_rva_translation_init(struct pe_context *pex)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 
 	if (file->file_ops == &pt_file_c_operations)
 		pex->flags |= PE_FLAG_RVA_TRANSLATION;
@@ -316,7 +316,7 @@ int pe_open(struct pe_context *pex, struct pt_file *file, int flags)
 		return -1;
 	}
 
-	pex->__file = file;
+	pex->file__ = file;
 	__pe_rva_translation_init(pex);
 
 	return 0;
@@ -324,7 +324,7 @@ int pe_open(struct pe_context *pex, struct pt_file *file, int flags)
 
 void pe_close(struct pe_context *pex)
 {
-	pex->__file->file_ops->close(pex->__file);
+	pex->file__->file_ops->close(pex->file__);
 
 	if (pex->import_directory.array)
 		free(pex->import_directory.array);
@@ -338,7 +338,7 @@ void pe_close(struct pe_context *pex)
 
 char *pe_ascii_string_read(struct pe_context *pex, off_t va)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	size_t length = 0;
 	char buf[4096];
 	off_t off_old;
@@ -398,7 +398,7 @@ err:
 
 int pe_data_read(struct pe_context *pex, off_t foffset, char *buffer, uint32_t length)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t off_old;
 	ssize_t ret;
 
@@ -1626,7 +1626,7 @@ void *pe_section_from_rva_get(struct pe_context *pex, rva_t rva)
 /* PE TLS Callbacks directory functions */
 int pe32_tls_callback_directory_get(struct pe_context *pex, struct pe32_image_tls_directory *d)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	uint32_t dir_entry_size;
 	off_t off_tls, off_old;
 	rva_t rva_tls;
@@ -1680,7 +1680,7 @@ err:
 /* PE export directory functions */
 int pe_export_directory_get(struct pe_context *pex, struct pe_image_export_directory *d)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t off_export, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_export;
@@ -1734,7 +1734,7 @@ err:
 
 int pe_import_directory_table_get(struct pe_context *pex, struct pe_image_import_directory_table  *t)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t off_import, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_import;
@@ -1850,7 +1850,7 @@ char *pe_import_directory_get_function_name32(struct pe_context *pex, int idx_mo
 	struct pe_image_import_descriptor *d;
 	struct image_thunk_data32 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -1951,7 +1951,7 @@ char *pe_delay_directory_get_function_name32(struct pe_context *pex, int idx_mod
 	struct pe_image_delay_descriptor *d;
 	struct image_thunk_data32 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -2049,7 +2049,7 @@ char *pe_import_directory_get_function_name64(struct pe_context *pex, int idx_mo
 	struct pe_image_import_descriptor *d;
 	struct image_thunk_data64 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -2253,7 +2253,7 @@ rva_t pe_import_directory_get_function_ptr_iat64(struct pe_context *pex, int idx
 
 int pe_delay_directory_table_get(struct pe_context *pex, struct pe_image_delay_directory_table *t)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t off_delay, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_delay;
@@ -2317,7 +2317,7 @@ rva_t *
 pe_export_directory_get_names_rva(struct pe_context *pex, struct pe_image_export_directory *d)
 {
 	size_t size = d->number_of_names * sizeof(rva_t);
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t off_old, offset_of_names;
 	ssize_t ret;
 	rva_t *vas;
@@ -2366,7 +2366,7 @@ err:
 int
 pe_export_directory_get_index_of_ordinal(struct pe_context *pex, struct pe_image_export_directory *d, uint16_t ordinal)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t offset_of_ordinals;
 	uint16_t *ordinals;
 	ssize_t ret;
@@ -2415,7 +2415,7 @@ uint32_t
 pe32_tls_callback_directory_get_function_va(struct pe_context *pex,
 	struct pe32_image_tls_directory *d, uint32_t base, int index)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t offset_of_functions;
 	uint32_t address;
 	ssize_t ret;
@@ -2456,7 +2456,7 @@ pe32_tls_callback_directory_get_function_va(struct pe_context *pex,
 rva_t
 pe_export_directory_get_function_rva(struct pe_context *pex, struct pe_image_export_directory *d, int index)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t offset_of_functions;
 	rva_t address;
 	ssize_t ret;
@@ -2492,7 +2492,7 @@ pe_export_directory_get_function_rva(struct pe_context *pex, struct pe_image_exp
 int32_t
 pe_export_directory_get_names_ordinal(struct pe_context *pex, struct pe_image_export_directory *d, int index)
 {
-	struct pt_file *file = pex->__file;
+	struct pt_file *file = pex->file__;
 	off_t offset_of_name_ordinals;
 	ordinal_t ordinal;
 	ssize_t ret;

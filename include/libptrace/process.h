@@ -40,12 +40,11 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_PROCESS_H
-#define __PT_PROCESS_H
+#ifndef PT_PROCESS_H
+#define PT_PROCESS_H
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <libptrace/avl.h>
 #include <libptrace/list.h>
 #include <libptrace/types.h>
 #include <libptrace/charset.h>
@@ -63,22 +62,22 @@
 #define PT_PROCESS_STATE_DETACHED		5
 #define PT_PROCESS_STATE_EXITED			6
 
-#define pt_process_for_each_thread(p, t)				\
-	for (struct pt_iterator i = pt_iterator_thread_begin(p);	\
-	     (t) = pt_iterator_thread_get(&i),				\
-	     !pt_iterator_thread_end(&i);				\
+#define pt_process_for_each_thread(p, t)                                      \
+	for (struct pt_iterator i = pt_iterator_thread_begin(p);              \
+	     (t) = pt_iterator_thread_get(&i),                                \
+	     !pt_iterator_thread_end(&i);                                     \
 	     pt_iterator_thread_next(&i))
 
-#define pt_process_for_each_module(p, m)				\
-	for (struct pt_iterator i = pt_iterator_module_begin(p);	\
-	     (m) = pt_iterator_module_get(&i),				\
-	     !pt_iterator_module_end(&i);				\
+#define pt_process_for_each_module(p, m)                                      \
+	for (struct pt_iterator i = pt_iterator_module_begin(p);              \
+	     (m) = pt_iterator_module_get(&i),                                \
+	     !pt_iterator_module_end(&i);                                     \
 	     pt_iterator_module_next(&i))
 
-#define pt_process_for_each_breakpoint(p, b)				\
-	for (struct pt_iterator i = pt_iterator_breakpoint_begin(p);	\
-	     (b) = pt_iterator_breakpoint_get(&i),			\
-	     !pt_iterator_breakpoint_end(&i);				\
+#define pt_process_for_each_breakpoint(p, b)                                  \
+	for (struct pt_iterator i = pt_iterator_breakpoint_begin_process(p);  \
+	     (b) = pt_iterator_breakpoint_get(&i),                            \
+	     !pt_iterator_breakpoint_end(&i);                                 \
 	     pt_iterator_breakpoint_next(&i))
 
 struct pt_process;
@@ -128,4 +127,4 @@ int	pt_process_brk(struct pt_process *);
 };
 #endif
 
-#endif
+#endif	/* !PT_PROCESS_H */

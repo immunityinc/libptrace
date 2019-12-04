@@ -383,7 +383,8 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
 {
 	unsigned char *np, *p = NULL;
 	unsigned char buf[256];
-	utf8_t *result;
+	utf8_t *result = NULL;
+	PUNICODE_STRING pus;
 	NTSTATUS ret;
 	ULONG s = 0;
 
@@ -406,11 +407,7 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
 	while (!NT_SUCCESS(ret) && ret == STATUS_BUFFER_OVERFLOW) {
 		if ( (np = realloc(p, s)) == NULL) {
 			pt_error_errno_set(errno);
-
-			if (p != NULL)
-				free(p);
-
-			return NULL;
+			goto out_free;
 		}
 
 		p = np;
@@ -420,12 +417,19 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
 	/* Handle all non-STATUS_BUFFER_OVERFLOW errors. */
 	if (!NT_SUCCESS(ret)) {
 		pt_windows_error_winapi_set_value(RtlNtStatusToDosError(ret));
-		return NULL;
+		goto out_free;
+	}
+
+	pus = (PUNICODE_STRING)p;
+	if (pus->Buffer == NULL || pus->Length == 0) {
+		pt_error_internal_set(PT_ERROR_NOT_FOUND);
+		goto out_free;
 	}
 
 	/* Convert the resulting name to utf-8. */
-	result = pt_utf16_to_utf8(((PUNICODE_STRING)p)->Buffer);
+	result = pt_utf16_to_utf8(pus->Buffer);
 
+out_free:
 	/* If we have dynamically allocated 'p', clean it up. */
 	if (p != buf)
 		free(p);

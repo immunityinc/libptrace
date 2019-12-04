@@ -38,50 +38,50 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def attached(process):
-    print "[%d] attached" % process.id
+    print("[{}] attached".format(process.id))
 
 def process_exit(process):
-    print "[%d] exited" % process.id
+    print("[{}] exited".format(process.id))
 
 def thread_create(process, thread):
-    print "[%d] Created thread with tid %d" % (process.id, thread.id)
+    print("[{}] Created thread with tid {}".format(process.id, thread.id))
 
 def thread_exit(process, thread):
-    print "[%d] Thread with tid %d exited" % (process.id, thread.id)
+    print("[{}] Thread with tid {} exited".format(process.id, thread.id))
 
 def module_load(process, module):
-    print "[%d] Module %s loaded at 0x%.8x" % (process.id, module.name, module.base)
+    print("[{}] Module {} loaded at 0x{:08x}".format(process.id, module.name, module.base))
 
 def module_unload(process, module):
-    print "[%d] Module %s unloaded" % (process.id, module.name)
+    print("[{}] Module {} unloaded".format(process.id, module.name))
 
 def breakpoint(process, breakpoint, chance):
-    print "[%d] Breakpoint" % process.id
+    print("[{}] Breakpoint".format(process.id))
 
 def single_step(process, thread):
-    print "[%d] Single step" % process.id
+    print("[{}] Single step".format(process.id))
 
 def illegal_instruction(process, thread, chance=None):
-    print "[%d/%d] Illegal instruction" % (process.id, thread.id)
+    print("[{}/{}] Illegal instruction".format(process.id, thread.id))
 
 def segfault(process, thread, address, fault_address):
-    print "[%d] Thread %d segmentation fault on address 0x%.8x" % \
-        (process.id, thread.id, fault_address)
+    print("[{}] Thread {} segmentation fault on address 0x{:08x}"
+          .format(process.id, thread.id, fault_address))
 
 def divide_by_zero(process, thread, chance=None):
-    print "[%d/%d] Divide by zero" % (process.id, thread.id)
+    print("[{}/{}] Divide by zero".format(process.id, thread.id))
 
 def priv_instruction(process, thread, chance=None):
-    print "[%d/%d] Privileged instruction" % (process.id, thread.id)
+    print("[{}/{}] Privileged instruction".format(process.id, thread.id))
 
 parser = argparse.ArgumentParser(description='Event handler demonstration script.')
 parser.add_argument('file', nargs='?', metavar='filename', help='executable.')

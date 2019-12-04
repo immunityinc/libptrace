@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_FACTORY_H
-#define __PT_FACTORY_H
+#ifndef PT_FACTORY_H
+#define PT_FACTORY_H
 
 #define PT_FACTORY_CORE_WINDOWS              1
 
@@ -53,4 +53,4 @@ struct pt_core *pt_factory_core_new(int type);
 };
 #endif
 
-#endif
+#endif	/* !PT_FACTORY_H */

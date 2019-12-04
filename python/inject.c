@@ -45,6 +45,7 @@
 #include <libptrace/error.h>
 #include <libptrace/inject.h>
 #include <libptrace/log.h>
+#include "compat.h"
 #include "process.h"
 #include "inject.h"
 #include "utils.h"
@@ -91,7 +92,7 @@ int __pypt_inject_handler_pre(struct pt_process *process, void *cookie)
 	}
 
 	/* Convert the python return value into an integer. */
-	ret = PyInt_AsLong(pyret);
+	ret = py_num_to_long(pyret);
 	Py_DECREF(pyret);
 	if (ret == -1 && PyErr_Occurred()) {
 		/* XXX: raise an error. */
@@ -144,7 +145,7 @@ int __pypt_inject_handler_post(struct pt_process *process, void *cookie)
 	}
 
 	/* Convert the python return value into an integer. */
-	ret = PyInt_AsLong(pyret);
+	ret = py_num_to_long(pyret);
 	Py_DECREF(pyret);
 	if (ret == -1 && PyErr_Occurred()) {
 		/* XXX: raise an error. */
@@ -181,7 +182,7 @@ pypt_inject_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject*)self);
+		Py_TYPE(self)->tp_free((PyObject*)self);
 		return NULL;
 	}
 
@@ -193,7 +194,7 @@ static void
 pypt_inject_dealloc(struct pypt_inject *self)
 {
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -213,7 +214,7 @@ pypt_inject_inject(struct pypt_inject *self, PyObject *args)
 	process = ((struct pypt_process *)pyprocess)->process;
 
 	/* Get the code and size of the code to inject. */
-	ret = PyString_AsStringAndSize(
+	ret = PyBytes_AsStringAndSize(
 		self->data,
 		(char **)&inject.data,
 		(Py_ssize_t *)&inject.data_size
@@ -222,7 +223,7 @@ pypt_inject_inject(struct pypt_inject *self, PyObject *args)
 		return NULL;
 
 	/* Get the argument and size of the argument to inject. */
-	ret = PyString_AsStringAndSize(
+	ret = PyBytes_AsStringAndSize(
 		self->data,
 		(char **)&inject.argument,
 		(Py_ssize_t *)&inject.argument_size
@@ -250,7 +251,7 @@ pypt_inject_inject(struct pypt_inject *self, PyObject *args)
 static PyObject *pypt_inject__repr__(struct pypt_inject *self)
 {
 	return PyString_FromFormat("<%s(%p)>",
-			self->ob_type->tp_name,
+			Py_TYPE(self)->tp_name,
 			self);
 }
 
@@ -274,8 +275,7 @@ static PyMemberDef pypt_inject_members[] = {
 };
 
 PyTypeObject pypt_inject_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.inject",			/* tp_name */
 	sizeof(struct pypt_inject),		/* tp_basicsize */
 	0,					/* tp_itemsize */

@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_CHARSET_H
-#define __PT_CHARSET_H
+#ifndef PT_CHARSET_H
+#define PT_CHARSET_H
 
 #include <stdint.h>
 
@@ -59,4 +59,4 @@ int utf16_valid(const utf16_t *);
 };
 #endif
 
-#endif	/* !__PT_CHARSET_H */
+#endif	/* !PT_CHARSET_H */

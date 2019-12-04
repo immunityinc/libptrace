@@ -47,6 +47,7 @@
 #include "../src/registers.h"
 #include "../src/thread_x86.h"
 
+#include "compat.h"
 #include "ptrace.h"
 #include "thread.h"
 #include "utils.h"
@@ -71,7 +72,7 @@ pypt_thread_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	self->dict = PyDict_New();
 
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject*)self);
+		Py_TYPE(self)->tp_free((PyObject*)self);
 		return NULL;
 	}
 
@@ -86,7 +87,7 @@ pypt_thread_dealloc(struct pypt_thread *self)
 {
 	Py_XDECREF(self->process);
 	Py_XDECREF(self->dict);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static PyObject *
@@ -279,7 +280,7 @@ err:
 		if ( (integer = PyDict_GetItemString(m, n)) == NULL)	\
 			return NULL;					\
 									\
-		value = PyInt_AsLong(integer);				\
+		value = py_num_to_long(integer);			\
 		if (value == -1 && PyErr_Occurred())			\
 			return NULL;					\
 	} while (0)
@@ -501,7 +502,7 @@ pypt_thread_sscanf(struct pypt_thread *self, PyObject *args)
 static PyObject *pypt_thread__repr__(struct pypt_thread *self)
 {
 	return PyString_FromFormat("<%s(%p) tid:%u handle:0x%p exit_code:%u%s>",
-				   self->ob_type->tp_name, self,
+				   Py_TYPE(self)->tp_name, self,
 				   self->thread->tid,
 				   self->thread->private_data,
 				   self->thread->exit_code,
@@ -534,8 +535,7 @@ static PyMemberDef pypt_thread_members[] = {
 };
 
 PyTypeObject pypt_thread_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.thread",			/* tp_name */
 	sizeof(struct pypt_thread),		/* tp_basicsize */
 	0,					/* tp_itemsize */

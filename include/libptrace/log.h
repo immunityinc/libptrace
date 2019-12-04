@@ -38,8 +38,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_LOG_H
-#define __PT_LOG_H
+#ifndef PT_LOG_H
+#define PT_LOG_H
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -48,11 +48,11 @@
 
 #define PT_LOG_HOOK_INIT	{ .handler = NULL, .cookie = NULL }
 
-extern struct list_head __log_hooks;
+extern struct list_head log_hooks__;
 
 static inline int pt_log_active(void)
 {
-	return !list_empty(&__log_hooks);
+	return !list_empty(&log_hooks__);
 };
 
 typedef void (*pt_log_hook_t)(void *, const char *, va_list);
@@ -77,4 +77,4 @@ int  pt_log_hook_unregister(struct pt_log_hook *);
 };
 #endif
 
-#endif
+#endif	/* !PT_LOG_H */

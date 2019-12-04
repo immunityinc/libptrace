@@ -38,28 +38,28 @@
 #
 # Author: Ronald Huizer <ronald@immunityinc.com>
 #
+from __future__ import print_function
 import sys
-import struct
 import _ptrace
 import argparse
 
 def logger(cookie, string):
-    print string,
+    print(string, end='')
 
 def attached(process):
     handler, cookie = int(args.handler, 16), int(args.cookie, 16)
-    print "Attached to PID:", process.id
-    print "Threads: ", [t.id for t in process.threads]
+    print("Attached to PID: {}".format(process.id))
+    print("Threads: ", [t.id for t in process.threads])
     process.thread_create(handler, cookie)
 
 def process_exit(process):
-    print "[%d] exited" % process.id
+    print("[{}] exited".format(process.id))
 
 def thread_create(process, thread):
-    print "[%d] Created thread with tid %d" % (process.id, thread.id)
+    print("[{}] Created thread with tid {}".format(process.id, thread.id))
 
 def thread_exit(process, thread):
-    print "[%d] Thread with tid %d exited" % (process.id, thread.id)
+    print("[{}] Thread with tid {} exited".format(process.id, thread.id))
 
 parser = argparse.ArgumentParser(description='Remote thread demonstration script.')
 parser.add_argument('handler', metavar='handler', help='handler.')

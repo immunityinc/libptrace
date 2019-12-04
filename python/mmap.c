@@ -42,6 +42,7 @@
  */
 #include <python/Python.h>
 #include <python/structmember.h>
+#include "compat.h"
 #include "mmap.h"
 #include "utils.h"
 
@@ -55,7 +56,7 @@ pypt_mmap_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 
 	self->dict = PyDict_New();
 	if (!self->dict) {
-		self->ob_type->tp_free((PyObject*)self);
+		Py_TYPE(self)->tp_free((PyObject*)self);
 		return NULL;
 	}
 
@@ -98,7 +99,7 @@ pypt_mmap_dealloc(struct pypt_mmap *self)
 	Py_XDECREF(self->dict);
 	self->pyprocess = NULL;
 	pt_mmap_delete(self->mmap);
-	self->ob_type->tp_free((PyObject *)self);
+	Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 // TODO: Add a real userland range depending on:
@@ -289,8 +290,7 @@ static PyMemberDef pypt_mmap_members[] = {
 };
 
 PyTypeObject pypt_mmap_type = {
-	PyObject_HEAD_INIT(NULL)
-	0,					/* ob_size */
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"_ptrace.mmap",				/* tp_name */
 	sizeof(struct pypt_mmap),		/* tp_basicsize */
 	0,					/* tp_itemsize */
