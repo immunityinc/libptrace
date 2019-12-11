@@ -53,33 +53,34 @@ struct test
 
 INTERVAL_TREE_DECLARE_C(test, struct test, node, foo, bar);
 
-void printf_node(void *_n)
+void printf_node(void *n_)
 {
-	struct test *n = (struct test *)_n;
+	struct test *n = (struct test *)n_;
 	struct avl_node *p;
-	struct interval_tree_node *_p;
-	struct test *__p;
+	struct interval_tree_node *p_;
+	struct test *p__;
 
 	printf("NODE [%lu,%lu]\n", n->foo, n->bar);
-	if(n->node.avl_node.parent) {
-		p = n->node.avl_node.parent;
-		_p = container_of(p, struct interval_tree_node, avl_node);
-		__p = container_of(_p, struct test, node);
-		printf("\t-> parent [%lu,%lu]\n", __p->foo, __p->bar);
+
+	if (n->node.avl_node.parent) {
+		p   = n->node.avl_node.parent;
+		p_  = container_of(p, struct interval_tree_node, avl_node);
+		p__ = container_of(p_, struct test, node);
+		printf("\t-> parent [%lu,%lu]\n", p__->foo, p__->bar);
 	}
 
-	if(n->node.avl_node.left) {
-		p = n->node.avl_node.left;
-		_p = container_of(p, struct interval_tree_node, avl_node);
-		__p = container_of(_p, struct test, node);
-		printf("\t-> left [%lu,%lu]\n", __p->foo, __p->bar);
+	if (n->node.avl_node.left) {
+		p   = n->node.avl_node.left;
+		p_  = container_of(p, struct interval_tree_node, avl_node);
+		p__ = container_of(p_, struct test, node);
+		printf("\t-> left [%lu,%lu]\n", p__->foo, p__->bar);
 	}
 
 	if(n->node.avl_node.right) {
-		p = n->node.avl_node.right;
-		_p = container_of(p, struct interval_tree_node, avl_node);
-		__p = container_of(_p, struct test, node);
-		printf("\t-> right [%lu,%lu]\n", __p->foo, __p->bar);
+		p   = n->node.avl_node.right;
+		p_  = container_of(p, struct interval_tree_node, avl_node);
+		p__ = container_of(p_, struct test, node);
+		printf("\t-> right [%lu,%lu]\n", p__->foo, p__->bar);
 	}
 
 	printf("\t-> max %lu\n", n->node.max);

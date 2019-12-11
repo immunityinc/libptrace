@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_QUEUE_INTERNAL_H
-#define __PT_QUEUE_INTERNAL_H
+#ifndef PT_QUEUE_INTERNAL_H
+#define PT_QUEUE_INTERNAL_H
 
 #include "condvar.h"
 #include "mutex.h"
@@ -78,4 +78,4 @@ int pt_queue_recv(struct pt_queue *queue, void *msg, size_t msg_len);
 };
 #endif
 
-#endif	/* !__PT_QUEUE_INTERNAL_H */
+#endif	/* !PT_QUEUE_INTERNAL_H */

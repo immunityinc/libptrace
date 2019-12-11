@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_DBGHELP_H
-#define __PT_WINDOWS_API_DBGHELP_H
+#ifndef PT_WINDOWS_API_DBGHELP_H
+#define PT_WINDOWS_API_DBGHELP_H
 
 #include <windows.h>
 #include <dbghelp.h>
@@ -117,4 +117,4 @@ int pt_windows_api_sym_set_search_path(HANDLE h, const utf8_t *path);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_DBGHELP_H */

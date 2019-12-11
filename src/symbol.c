@@ -65,7 +65,7 @@ pt_symbol_manager_install(struct pt_process *process, struct pt_symbol_op *sop)
 	smgr->sop = sop;
 
 	/* this is managed by the OS layer */
-	smgr->__private = NULL;
+	smgr->private_ = NULL;
 
 	if (smgr->sop->symbol_mgr_init) {
 		err = smgr->sop->symbol_mgr_init(smgr);

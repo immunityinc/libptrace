@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_THREAD_X86_INTERNAL_H
-#define __PT_THREAD_X86_INTERNAL_H
+#ifndef PT_THREAD_X86_INTERNAL_H
+#define PT_THREAD_X86_INTERNAL_H
 
 #include <stdint.h>
 #include <libptrace/thread.h>
@@ -97,7 +97,7 @@ struct pt_x86_descriptor
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif
 
 /* x86 register functions */
 uint16_t pt_thread_x86_get_cs(struct pt_thread *);
@@ -135,6 +135,6 @@ void pt_thread_x86_descriptor_print(struct pt_x86_descriptor *);
 
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
-
 #endif
+
+#endif	/* !PT_THREAD_X86_INTERNAL_H */

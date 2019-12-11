@@ -45,8 +45,8 @@
 
 typedef struct pt_handle
 {
-	uint64_t priv_h1__;
-	uint64_t priv_h2__;
+	uint64_t priv_h1_;
+	uint64_t priv_h2_;
 } pt_handle_t;
 
 #define PT_HANDLE_NULL		((pt_handle_t){ 0, 0 })

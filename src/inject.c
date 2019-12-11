@@ -47,7 +47,7 @@
 #include "process.h"
 #include "thread.h"
 
-struct __pt_inject_context
+struct pt_inject_context_
 {
 	int tid;
 	struct pt_process *process;
@@ -69,10 +69,10 @@ struct __pt_inject_context
 };
 
 static int
-__pt_inject_thread_create(struct pt_event *event)
+pt_inject_thread_create_(struct pt_event *event)
 {
 	struct pt_event_thread_create *ev = (struct pt_event_thread_create *)event;
-	struct __pt_inject_context *ctx = (struct __pt_inject_context *)ev->cookie;
+	struct pt_inject_context_ *ctx = (struct pt_inject_context_ *)ev->cookie;
 	struct pt_process *p = ev->thread->process;
 	int ret = PT_EVENT_FORWARD;
 	int tid = ev->thread->tid;
@@ -93,10 +93,10 @@ __pt_inject_thread_create(struct pt_event *event)
 }
 
 static int
-__pt_inject_thread_exit(struct pt_event *event)
+pt_inject_thread_exit_(struct pt_event *event)
 {
 	struct pt_event_thread_exit *ev = (struct pt_event_thread_exit *)event;
-	struct __pt_inject_context *ctx = (struct __pt_inject_context *)ev->cookie;
+	struct pt_inject_context_ *ctx = (struct pt_inject_context_ *)ev->cookie;
 	struct pt_process *p = ev->thread->process;
 	int ret = PT_EVENT_FORWARD;
 	int tid = ev->thread->tid;
@@ -126,8 +126,8 @@ __pt_inject_thread_exit(struct pt_event *event)
 }
 
 static inline int
-__inject_write(struct pt_process *p, pt_address_t dst,
-               const void *src, size_t size)
+inject_write_(struct pt_process *p, pt_address_t dst,
+              const void *src, size_t size)
 {
 	if (src == NULL || size == 0)
 		return 0;
@@ -141,7 +141,7 @@ __inject_write(struct pt_process *p, pt_address_t dst,
 
 int pt_inject(struct pt_inject *inject, struct pt_process *p)
 {
-	struct __pt_inject_context *ctx;
+	struct pt_inject_context_ *ctx;
 	pt_address_t data, dest;
 	int tid, ret;
 	size_t size;
@@ -158,12 +158,12 @@ int pt_inject(struct pt_inject *inject, struct pt_process *p)
 		goto err_ctx;
 
 	/* Write the code to be executed to the new region. */
-	if (__inject_write(p, data, inject->data, inject->data_size) == -1)
+	if (inject_write_(p, data, inject->data, inject->data_size) == -1)
 		goto err_free;
 
 	/* Write argument to the code in the new region. */
 	dest = data + inject->argument_size;
-	ret = __inject_write(p, dest, inject->argument, inject->argument_size);
+	ret  = inject_write_(p, dest, inject->argument, inject->argument_size);
 	if (ret == -1)
 		goto err_free;
 
@@ -173,13 +173,13 @@ int pt_inject(struct pt_inject *inject, struct pt_process *p)
 	 */
 	ctx->thread_create = pt_event_handler_stack_push(
 		&p->handlers.thread_create,
-	        __pt_inject_thread_create, ctx);
+	        pt_inject_thread_create_, ctx);
 	if (ctx->thread_create == NULL)
 		goto err_free;
 
 	ctx->thread_exit   = pt_event_handler_stack_push(
 		&p->handlers.thread_exit,
-	        __pt_inject_thread_exit, ctx);
+	        pt_inject_thread_exit_, ctx);
 	if (ctx->thread_exit == NULL)
 		goto err_thread_create_handler;
 

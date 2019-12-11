@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_PROCESS_H
-#define __PYTHON_PTRACE_PROCESS_H
+#ifndef PYPT_PROCESS_INTERNAL_H
+#define PYPT_PROCESS_INTERNAL_H
 
 #include <python/Python.h>
 #include "../src/process.h"
@@ -66,4 +66,4 @@ extern PyTypeObject pypt_process_type;
 
 int pypt_process_init(struct pypt_process *, PyObject *, PyObject *);
 
-#endif
+#endif	/* !PYPT_PROCESS_INTERNAL_H */

@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __SHORTCUT_H
-#define __SHORTCUT_H
+#ifndef PT_WINDOWS_SHORTCUT_INTERNAL_H
+#define PT_WINDOWS_SHORTCUT_INTERNAL_H
 
 /* Make sure MingW gives us the COM vtables in C */
 #define COBJMACROS
@@ -57,19 +57,19 @@ extern "C" {
 
 struct shortcut
 {
-	utf8_t	*pathname;
-	utf8_t	*arguments;
+	utf8_t *pathname;
+	utf8_t *arguments;
 
 	/* Used with IShellLink Resolve(), which takes a window handle. */
-	HWND	__window;
+	HWND    window_;
 };
 
 void shortcut_init(struct shortcut *shortcut);
 void shortcut_destroy(struct shortcut *shortcut);
-int shortcut_resolve(struct shortcut *shortcut, const char *pathname);
+int  shortcut_resolve(struct shortcut *shortcut, const char *pathname);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif	/* !__SHORTCUT_H */
+#endif	/* !PT_WINDOWS_SHORTCUT_INTERNAL_H */

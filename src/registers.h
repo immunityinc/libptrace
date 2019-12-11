@@ -40,14 +40,14 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_REGISTERS_H
-#define __LIBPTRACE_REGISTERS_H
+#ifndef PT_REGISTERS_INTERNAL_H
+#define PT_REGISTERS_INTERNAL_H
 
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif
 
 enum {
 	PT_REGISTERS_I386,	PT_REGISTERS_I386_LINUX,
@@ -194,6 +194,6 @@ int pt_registers_get_size(struct pt_registers *regs);
 
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
+#endif
 
-#endif /* !__LIBPTRACE_REGISTERS_H */
+#endif /* !PT_REGISTERS_INTERNAL_H */

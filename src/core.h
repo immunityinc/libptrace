@@ -37,8 +37,8 @@
  *
  * Author: Ronald Huizer <ronald@immunityinc.com>
  */
-#ifndef __PT_CORE_INTERNAL_H
-#define __PT_CORE_INTERNAL_H
+#ifndef PT_CORE_INTERNAL_H
+#define PT_CORE_INTERNAL_H
 
 #include <libptrace/core.h>
 #include <libptrace/event.h>
@@ -50,7 +50,7 @@
 
 struct pt_core;
 
-extern struct pt_core __pt_core_main;
+extern struct pt_core pt_core_main_;
 
 struct pt_core_operations
 {
@@ -79,4 +79,4 @@ int pt_core_destroy(struct pt_core *);
 struct pt_process *pt_process_find(pt_pid_t);
 struct pt_process *pt_core_process_find(struct pt_core *, pt_pid_t);
 
-#endif	/* !__PT_CORE_INTERNAL_H */
+#endif	/* !PT_CORE_INTERNAL_H */

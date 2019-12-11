@@ -53,10 +53,10 @@
 #include "thread.h"
 #include "process.h"
 
-int _thread_avl_compare(struct avl_node *_a, struct avl_node *_b)
+int thread_avl_compare_(struct avl_node *a_, struct avl_node *b_)
 {
-	struct pt_thread *a = container_of(_a, struct pt_thread, avl_node);
-	struct pt_thread *b = container_of(_b, struct pt_thread, avl_node);
+	struct pt_thread *a = container_of(a_, struct pt_thread, avl_node);
+	struct pt_thread *b = container_of(b_, struct pt_thread, avl_node);
 
 	if (a->tid < b->tid)
 		return -1;
@@ -79,11 +79,11 @@ void pt_thread_init(struct pt_thread *thread)
 	thread->registers          = NULL;
 	thread->breakpoint_restore = NULL;
 	thread->db_restore         = NULL;
-	thread->__super	           = NULL;
+	thread->super_	           = NULL;
 	thread->t_op               = NULL;
 
 	INIT_AVL_NODE(&thread->avl_node);
-	INIT_AVL_TREE(&thread->breakpoints, _breakpoint_avl_compare);
+	INIT_AVL_TREE(&thread->breakpoints, breakpoint_avl_compare_);
 	x86_debug_registers_init(&thread->debug_registers);
 }
 

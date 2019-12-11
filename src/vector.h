@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
  * USA.
  */
-#ifndef __VECTOR_H
-#define __VECTOR_H
+#ifndef PT_VECTOR_INTERNAL_H
+#define PT_VECTOR_INTERNAL_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -483,4 +483,4 @@ static inline unsigned int roundup_pow_of_two(unsigned int n)
         return 1U << fls(n - 1);
 }
 
-#endif	/* __VECTOR_H */
+#endif	/* !PT_VECTOR_INTERNAL_H */

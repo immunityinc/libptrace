@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_MMAP_H
-#define __PYTHON_PTRACE_MMAP_H
+#ifndef PYPT_MMAP_INTERNAL_H
+#define PYPT_MMAP_INTERNAL_H
 
 #include <python/Python.h>
 #include <libptrace/process.h>
@@ -59,4 +59,4 @@ struct pypt_mmap
 
 extern PyTypeObject pypt_mmap_type;
 
-#endif
+#endif	/* !PYPT_MMAP_INTERNAL_H */

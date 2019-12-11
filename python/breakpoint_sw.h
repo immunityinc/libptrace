@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_BREAKPOINT_SW_H
-#define __PYTHON_PTRACE_BREAKPOINT_SW_H
+#ifndef PYPT_BREAKPOINT_SW_INTERNAL_H
+#define PYPT_BREAKPOINT_SW_INTERNAL_H
 
 #include <python/Python.h>
 #include "../src/breakpoint.h"
@@ -61,4 +61,4 @@ struct pypt_breakpoint_sw
 
 extern PyTypeObject pypt_breakpoint_sw_type;
 
-#endif
+#endif	/* !PYPT_BREAKPOINT_SW_INTERNAL_H */

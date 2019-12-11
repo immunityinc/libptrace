@@ -91,7 +91,7 @@ pt_windows_symbol_mngr_module_load(struct pt_module *m)
 {
 	HANDLE hprocess = pt_windows_process_handle_get(m->process);
 	HANDLE hfile = pt_windows_module_handle_get(m);
-	struct __pt_os_symbol_info_header *info;
+	struct pt_os_symbol_info_header_ *info;
 	DWORD64 ret;
 	BOOL err;
 
@@ -197,7 +197,7 @@ inline static void ctx_put(struct enum_symbol_ctx *ctx, BOOL free_sym)
 	free(ctx);
 }
 
-static inline utf8_t *__undecorate(const utf8_t *symname)
+static inline utf8_t *undecorate_(const utf8_t *symname)
 {
 	DWORD flags = UNDNAME_COMPLETE;
 	return pt_windows_api_undecorate_symbol_name(symname, flags);
@@ -221,7 +221,7 @@ ctx_insert_sym(struct pt_windows_api_symbol_info *psym, struct enum_symbol_ctx *
 
 	/* is it a decorated symbol ? */
 	if (new_sym->symname[0] == '?')
-		new_sym->undecorated_symname = __undecorate(new_sym->symname);
+		new_sym->undecorated_symname = undecorate_(new_sym->symname);
 	else
 		new_sym->undecorated_symname = NULL;
 
@@ -246,7 +246,7 @@ ctx_insert_sym(struct pt_windows_api_symbol_info *psym, struct enum_symbol_ctx *
 }
 
 static BOOL
-__enum_symbols(struct pt_windows_api_symbol_info *pSymInfo, ULONG SymbolSize, PVOID UserContext)
+enum_symbols_(struct pt_windows_api_symbol_info *pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
 	struct enum_symbol_ctx *ctx = (struct enum_symbol_ctx *)UserContext;
 	struct pt_symbol_entry *sym_entry = NULL;
@@ -285,7 +285,7 @@ windows_symbol_enum(const utf8_t *symname, struct pt_module *module, BOOL once)
 		hprocess,
 		(ULONG64)(uintptr_t)module->base,
 		symname,
-		__enum_symbols,
+		enum_symbols_,
 		ctx
 	);
 
@@ -302,7 +302,7 @@ windows_symbol_enum(const utf8_t *symname, struct pt_module *module, BOOL once)
 	return sym_returned;
 }
 
-static struct pt_symbol_entry *__resolve_symbol(
+static struct pt_symbol_entry *resolve_symbol_(
 	const utf8_t *symbol_name,
 	struct pt_module  *module,
 	int flags)
@@ -314,7 +314,7 @@ static struct pt_symbol_entry *__resolve_symbol(
 }
 
 
-static struct pt_symbol_entry *__resolve_symbol_all(
+static struct pt_symbol_entry *resolve_symbol_all_(
 	const utf8_t *symbol_name,
 	struct pt_process *process,
 	int flags)
@@ -323,7 +323,7 @@ static struct pt_symbol_entry *__resolve_symbol_all(
 	struct pt_symbol_entry *sym_entry = NULL, *new_entry = NULL;
 
 	pt_process_for_each_module(process, module) {
-		new_entry = __resolve_symbol(symbol_name, module, flags);
+		new_entry = resolve_symbol_(symbol_name, module, flags);
 		if (new_entry) {
 			pt_symbol_join(&sym_entry, new_entry);
 			if (flags & PT_SYMBOL_SEARCH_ONCE)
@@ -347,9 +347,9 @@ struct pt_symbol_entry *windows_symbol_resolve(
 
 	/* search only within this specific module */
 	if (module)
-		sym_entry = __resolve_symbol(symbol, module, flags);
+		sym_entry = resolve_symbol_(symbol, module, flags);
 	else
-		sym_entry = __resolve_symbol_all(symbol, process, flags);
+		sym_entry = resolve_symbol_all_(symbol, process, flags);
 
 	if (sym_entry)
 		pt_log("%s(): symbol %s resolved\n", symbol);
@@ -407,7 +407,7 @@ struct pt_symbol_op windows_symbol_op = {
 	.module_detach		= windows_symbol_module_detach,
 };
 
-utf8_t *__pt_os_symbol_undecorate(const utf8_t *symname)
+utf8_t *pt_os_symbol_undecorate(const utf8_t *symname)
 {
-	return __undecorate(symname);
+	return undecorate_(symname);
 }

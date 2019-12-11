@@ -91,7 +91,7 @@ __thread struct pt_error pt_errno_saved = {
 	.private_data   = (void *)PT_ERROR_NONE
 };
 
-static const char *__pt_error_internal_str[] = {
+static const char *pt_error_internal_str_[] = {
 	"Success",
 	"Traced Process Exited",
 	"Unsuitable Page Size",
@@ -158,7 +158,7 @@ void pt_error_pe_set(int err)
 static const utf8_t *pt_error_internal_strerror(void)
 {
 	int code = (int)(intptr_t)pt_errno.private_data;
-	return (const utf8_t *)__pt_error_internal_str[code];
+	return (const utf8_t *)pt_error_internal_str_[code];
 }
 
 static const utf8_t *pt_error_errno_strerror(void)

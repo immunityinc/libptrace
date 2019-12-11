@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_STRING_LIST_H
-#define __PT_STRING_LIST_H
+#ifndef PT_STRING_LIST_INTERNAL_H
+#define PT_STRING_LIST_INTERNAL_H
 
 #include <libptrace/charset.h>
 
@@ -64,4 +64,4 @@ void pt_string_list_print(struct pt_string_list *list);
 };
 #endif
 
-#endif
+#endif	/* !PT_STRING_LIST_INTERNAL_H */

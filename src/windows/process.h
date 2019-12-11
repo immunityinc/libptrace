@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_PROCESS_INTERNAL_H
-#define __LIBPTRACE_WINDOWS_PROCESS_INTERNAL_H
+#ifndef PT_WINDOWS_PROCESS_INTERNAL_H
+#define PT_WINDOWS_PROCESS_INTERNAL_H
 
 #include <windows.h>
 #include <libptrace/event.h>
@@ -109,11 +109,11 @@ int breakpoint_handler(struct pt_thread *thread,
                        struct pt_event_breakpoint *ev);
 
 /* XXX: private routines. */
-void __pt_process_detach_bottom(struct pt_process *process);
-int  __pt_process_detach_top(struct pt_core *core, struct pt_process *process);
+void pt_process_detach_bottom_(struct pt_process *process);
+int  pt_process_detach_top_(struct pt_core *core, struct pt_process *process);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_PROCESS_INTERNAL_H */

@@ -52,23 +52,23 @@
 #include "message.h"
 #include "process.h"
 
-static int __process_compare(struct avl_node *_a, struct avl_node *_b);
-struct pt_core __pt_core_main;
+static int process_compare_(struct avl_node *a_, struct avl_node *b_);
+struct pt_core pt_core_main_;
 
 #ifdef WIN32
 #include "windows/core.h"
 
 /* XXX: rework later. */
-static void __attribute__((constructor)) __pt_core_main_initialize(void)
+static void __attribute__((constructor)) pt_core_main_initialize_(void)
 {
-	pt_windows_core_init(&__pt_core_main);
+	pt_windows_core_init(&pt_core_main_);
 }
 #endif
 
-static int __process_compare(struct avl_node *_a, struct avl_node *_b)
+static int process_compare_(struct avl_node *a_, struct avl_node *b_)
 {
-	struct pt_process *a = container_of(_a, struct pt_process, avl_node);
-	struct pt_process *b = container_of(_b, struct pt_process, avl_node);
+	struct pt_process *a = container_of(a_, struct pt_process, avl_node);
+	struct pt_process *b = container_of(b_, struct pt_process, avl_node);
 
 	if (a->pid < b->pid)
 		return -1;
@@ -89,7 +89,7 @@ int pt_core_init(struct pt_core *core)
 	core->options      = PT_CORE_OPTION_AUTO_TERMINATE_MAIN;
 	core->quit         = 0;
 	core->private_data = NULL;
-	INIT_AVL_TREE(&core->process_tree, __process_compare);
+	INIT_AVL_TREE(&core->process_tree, process_compare_);
 
 	return 0;
 }
@@ -154,7 +154,7 @@ struct pt_process *pt_core_process_find(struct pt_core *core, pt_pid_t pid)
 
 struct pt_process *pt_process_find(pt_pid_t pid)
 {
-	return pt_core_process_find(&__pt_core_main, pid);
+	return pt_core_process_find(&pt_core_main_, pid);
 }
 
 void pt_core_quit(struct pt_core *core)
@@ -164,10 +164,10 @@ void pt_core_quit(struct pt_core *core)
 
 void pt_quit(void)
 {
-	pt_core_quit(&__pt_core_main);
+	pt_core_quit(&pt_core_main_);
 }
 
-static inline int __main_loop_done(struct pt_core *core, int ret)
+static inline int main_loop_done_(struct pt_core *core, int ret)
 {
 	int need_quit;
 
@@ -193,24 +193,24 @@ int pt_core_main(struct pt_core *core)
 
 	do {
 		ret = pt_core_event_wait(core);
-	} while (!__main_loop_done(core, ret));
+	} while (!main_loop_done_(core, ret));
 
 	return ret;
 }
 
 int pt_main(void)
 {
-	return pt_core_main(&__pt_core_main);
+	return pt_core_main(&pt_core_main_);
 }
 
 pt_handle_t pt_process_attach(pt_pid_t pid, struct pt_event_handlers *handlers, int options)
 {
-	return pt_core_process_attach(&__pt_core_main, pid, handlers, options);
+	return pt_core_process_attach(&pt_core_main_, pid, handlers, options);
 }
 
 pt_handle_t pt_process_attach_remote(pt_pid_t pid, struct pt_event_handlers *handlers, int options)
 {
-	return pt_core_process_attach_remote(&__pt_core_main, pid, handlers, options);
+	return pt_core_process_attach_remote(&pt_core_main_, pid, handlers, options);
 }
 
 int pt_core_process_detach_remote(struct pt_core *core, pt_handle_t handle)
@@ -312,7 +312,7 @@ int pt_core_process_detach(struct pt_core *core, struct pt_process *process)
 
 int pt_process_detach(struct pt_process *process)
 {
-	return pt_core_process_detach(&__pt_core_main, process);
+	return pt_core_process_detach(&pt_core_main_, process);
 }
 
 pt_handle_t pt_core_execv_remote(
@@ -398,7 +398,7 @@ pt_handle_t pt_execv(
 	struct pt_event_handlers *handlers,
 	int options)
 {
-	return pt_core_execv(&__pt_core_main, filename, argv, handlers, options);
+	return pt_core_execv(&pt_core_main_, filename, argv, handlers, options);
 }
 
 pt_handle_t pt_core_process_attach_remote(

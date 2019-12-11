@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_THREAD_INTERNAL_H
-#define __PT_THREAD_INTERNAL_H
+#ifndef PT_THREAD_INTERNAL_H
+#define PT_THREAD_INTERNAL_H
 
 #include <libptrace/breakpoint.h>
 #include <libptrace/breakpoint_x86.h>
@@ -120,7 +120,7 @@ struct pt_thread
         struct avl_tree			breakpoints;
 
 	/* Upward indirection for python bindings. */
-	void				*__super;
+	void				*super_;
 
 	/* operations for this thread */
 	struct pt_thread_operations    *t_op;
@@ -128,7 +128,7 @@ struct pt_thread
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif
 
 void pt_thread_init(struct pt_thread *);
 int  pt_thread_destroy(struct pt_thread *);
@@ -162,6 +162,6 @@ pt_address_t pt_thread_register_pc_get(struct pt_thread *);
 
 #ifdef __cplusplus
 };
-#endif /* __cplusplus */
+#endif
 
-#endif /* !__PT_THREAD_INTERNAL_H */
+#endif /* !PT_THREAD_INTERNAL_H */

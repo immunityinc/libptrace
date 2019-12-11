@@ -208,9 +208,9 @@ pt_windows_thread_registers_get(struct pt_thread *thread)
 }
 
 int
-pt_windows_thread_registers_set(struct pt_thread *thread, struct pt_registers *__regs)
+pt_windows_thread_registers_set(struct pt_thread *thread, struct pt_registers *regs_)
 {
-	struct pt_registers_i386 *regs = (struct pt_registers_i386 *)__regs;
+	struct pt_registers_i386 *regs = (struct pt_registers_i386 *)regs_;
 	HANDLE h = pt_windows_thread_handle_get(thread);
 	CONTEXT ctx;
 
@@ -500,9 +500,9 @@ pt_windows_wow64_thread_registers_get(struct pt_thread *thread)
 }
 
 int
-pt_windows_wow64_thread_registers_set(struct pt_thread *thread, struct pt_registers *__regs)
+pt_windows_wow64_thread_registers_set(struct pt_thread *thread, struct pt_registers *regs_)
 {
-	return pt_windows_thread_registers_set(thread, __regs);
+	return pt_windows_thread_registers_set(thread, regs_);
 
 }
 

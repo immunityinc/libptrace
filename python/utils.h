@@ -40,12 +40,12 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_UTILS_H
-#define __PYTHON_PTRACE_UTILS_H
+#ifndef PYPT_UTILS_INTERNAL_H
+#define PYPT_UTILS_INTERNAL_H
 
 #include <python/Python.h>
 
 PyObject* pypt_dict_get(PyObject *self, void *closure);
 PyObject* pypt_dict_set(PyObject *self, PyObject *value, void *closure);
 
-#endif
+#endif	/* !PYPT_UTILS_INTERNAL_H */

@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_MODULE_INTERNAL_H
-#define __PT_MODULE_INTERNAL_H
+#ifndef PT_MODULE_INTERNAL_H
+#define PT_MODULE_INTERNAL_H
 
 #include <libptrace/charset.h>
 #include <libptrace/list.h>
@@ -67,7 +67,7 @@ struct pt_module
 	struct list_head        process_entry;
 
 	/* super pointer. */
-	void			*__super;
+	void			*super_;
 
 	/* symbol resolution cache */
 	struct pt_symbol_cache_info *s_cache;
@@ -93,4 +93,4 @@ void pt_module_exports_delete(struct pt_module_exports *exports);
 };
 #endif
 
-#endif
+#endif	/* !PT_MODULE_INTERNAL_H */

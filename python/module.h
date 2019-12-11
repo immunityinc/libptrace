@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_MODULE_H
-#define __PYTHON_PTRACE_MODULE_H
+#ifndef PYPT_MODULE_INTERNAL_H
+#define PYPT_MODULE_INTERNAL_H
 
 #include <python/Python.h>
 #include "../src/module.h"
@@ -57,4 +57,4 @@ struct pypt_module
 
 extern PyTypeObject pypt_module_type;
 
-#endif
+#endif	/* !PYPT_MODULE_INTERNAL_H */

@@ -203,7 +203,7 @@ PyMODINIT_FUNC MODULE_INIT_FUNC_NAME(MODULE)(void)
 	if (pypt_core_main_ == NULL)
 		MODULE_INIT_FUNC_RETURN(NULL);
 
-	pypt_core_main_->core = &__pt_core_main;
+	pypt_core_main_->core = &pt_core_main_;
 	MODULE_INIT_FUNC_RETURN(m);
 }
 
@@ -275,7 +275,7 @@ pypt_processes(PyObject *self, PyObject *args)
 		return NULL;
 
 	pt_core_for_each_process (pypt_core_main_->core, p) {
-		if (PyList_Append(process_list, p->__super) == -1) {
+		if (PyList_Append(process_list, p->super_) == -1) {
 			Py_DECREF(process_list);
 			return NULL;
 		}

@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_MUTEX_H
-#define __PT_MUTEX_H
+#ifndef PT_MUTEX_INTERNAL_H
+#define PT_MUTEX_INTERNAL_H
 
 #include <pthread.h>
 
@@ -67,4 +67,4 @@ static inline int pt_mutex_unlock(pt_mutex_t *mutex)
 	return pthread_mutex_unlock(mutex);
 }
 
-#endif	/* !__PT_MUTEX_H */
+#endif	/* !PT_MUTEX_INTERNAL_H */

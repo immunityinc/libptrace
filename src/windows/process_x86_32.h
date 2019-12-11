@@ -42,18 +42,18 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_PROCESS_X86_32_H
-#define __LIBPTRACE_WINDOWS_PROCESS_X86_32_H
+#ifndef PT_WINDOWS_PROCESS_X86_32_H
+#define PT_WINDOWS_PROCESS_X86_32_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int __windows_x86_32_handle_exception_single_step
+int windows_x86_32_handle_exception_single_step_
 	(struct pt_process *, struct pt_thread *, LPEXCEPTION_RECORD);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_PROCESS_X86_32_H */

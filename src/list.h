@@ -24,8 +24,8 @@
  * with the one found in the Linux kernel (in include/linux/list.h).
  */
 
-#ifndef __LIBPTRACE_LIST_H
-#define __LIBPTRACE_LIST_H
+#ifndef PT_LIST_INTERNAL_H
+#define PT_LIST_INTERNAL_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -100,4 +100,4 @@ static inline int list_empty(struct list_head *head)
 }
 #endif
 
-#endif
+#endif	/* !PT_LIST_INTERNAL_H */

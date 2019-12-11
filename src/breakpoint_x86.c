@@ -41,7 +41,7 @@
 #include <libptrace/error.h>
 #include <libptrace/breakpoint_x86.h>
 
-static inline int __translate_size(int dr_size)
+static inline int translate_size_(int dr_size)
 {
 	switch (dr_size) {
 	case X86_DR_SIZE_1:
@@ -89,7 +89,7 @@ x86_debug_register_find(struct x86_debug_registers *ctx, pt_address_t address, i
 		if (ctx->regs[i].used == 0)
 			continue;
 
-		size = __translate_size(ctx->regs[i].size);
+		size = translate_size_(ctx->regs[i].size);
 		if (ctx->regs[i].type == type &&
 		    ctx->regs[i].address <= (uintptr_t)address &&
 		    ctx->regs[i].address + size > (uintptr_t)address)

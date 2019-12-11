@@ -118,6 +118,8 @@ int pt_breakpoint_handler(struct pt_thread *thread,
 
 	/* If we have a suppress operation defined for this breakpoint,
 	 * invoke it.
+	 *
+	 * XXX: handle suppression error.
 	 */
 	if (bp->b_op->suppress != NULL)
 		bp->b_op->suppress(ev->thread, bpi);
@@ -148,12 +150,12 @@ int pt_breakpoint_handler(struct pt_thread *thread,
 	return PT_EVENT_DROP;
 }
 
-int _breakpoint_avl_compare(struct avl_node *_a, struct avl_node *_b)
+int breakpoint_avl_compare_(struct avl_node *a_, struct avl_node *b_)
 {
         struct pt_breakpoint_internal *a =
-		container_of(_a, struct pt_breakpoint_internal, avl_node);
+		container_of(a_, struct pt_breakpoint_internal, avl_node);
         struct pt_breakpoint_internal *b =
-		container_of(_b, struct pt_breakpoint_internal, avl_node);
+		container_of(b_, struct pt_breakpoint_internal, avl_node);
 
         if (a->address < b->address)
                 return -1;

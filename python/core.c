@@ -259,7 +259,7 @@ PyObject *pypt_core_process_attach(struct pypt_core *self, PyObject *args)
 	}
 
 	pyprocess->process = process;
-	process->__super = pyprocess;
+	process->super_    = pyprocess;
 
 	/* XXX: error check. */
 	return process_to_handle(process);
@@ -484,7 +484,7 @@ PyObject *pypt_core_execv(struct pypt_core *self, PyObject *args)
 	}
 
 	pyprocess->process = process;
-	process->__super   = pyprocess;
+	process->super_    = pyprocess;
 
 	return process_to_handle(process);
 

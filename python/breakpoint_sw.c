@@ -65,14 +65,14 @@ static PyGetSetDef pypt_breakpoint_sw_getset[] = {
 };
 
 static void
-__pypt_breakpoint_sw_handler(struct pt_thread *pt_thread, void *cookie)
+pypt_breakpoint_sw_handler_(struct pt_thread *pt_thread, void *cookie)
 {
 	PyGILState_STATE gstate;
 	struct pypt_breakpoint_sw *bp = (struct pypt_breakpoint_sw *)cookie;
 	struct pypt_thread *thread;
 	PyObject *ret;
 
-	thread = (struct pypt_thread *)pt_thread->__super;
+	thread = (struct pypt_thread *)pt_thread->super_;
 
 	gstate = PyGILState_Ensure();
 
@@ -113,8 +113,8 @@ pypt_breakpoint_sw_init(struct pypt_breakpoint_sw *self, PyObject *args, PyObjec
 
 	/* Initialize the breakpoint structure. */
 	pt_breakpoint_sw_init(&self->breakpoint);
-	self->breakpoint.handler = __pypt_breakpoint_sw_handler;
-	self->breakpoint.cookie = self;
+	self->breakpoint.handler = pypt_breakpoint_sw_handler_;
+	self->breakpoint.cookie  = self;
 
 	/* Depending on the type we got, initialize address or symbol. */
 	if (py_num_check(symbol)) {

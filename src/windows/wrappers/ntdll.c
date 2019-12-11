@@ -86,52 +86,52 @@ NTSTATUS NTAPI NtSetInformationDebugObject(
 	PULONG ReturnLength);
 
 static HMODULE ntdll;
-static NTSTATUS NTAPI (*__NtSuspendProcess)(HANDLE);
-static NTSTATUS NTAPI (*__NtResumeProcess)(HANDLE);
-static NTSTATUS NTAPI (*__NtCreateThreadEx)(PHANDLE, ACCESS_MASK, LPVOID,
+static NTSTATUS NTAPI (*NtSuspendProcess_)(HANDLE);
+static NTSTATUS NTAPI (*NtResumeProcess_)(HANDLE);
+static NTSTATUS NTAPI (*NtCreateThreadEx_)(PHANDLE, ACCESS_MASK, LPVOID,
 	HANDLE, LPTHREAD_START_ROUTINE, LPVOID, BOOL, ULONG, ULONG, ULONG,
 	LPVOID);
-static NTSTATUS NTAPI (*__NtQueryObject)(HANDLE, OBJECT_INFORMATION_CLASS,
+static NTSTATUS NTAPI (*NtQueryObject_)(HANDLE, OBJECT_INFORMATION_CLASS,
 	PVOID, ULONG, PULONG);
-static NTSTATUS NTAPI (*__NtCreateDebugObject)(PHANDLE, ACCESS_MASK,
+static NTSTATUS NTAPI (*NtCreateDebugObject_)(PHANDLE, ACCESS_MASK,
 	POBJECT_ATTRIBUTES, ULONG);
-static NTSTATUS NTAPI (*__NtDebugActiveProcess)(HANDLE, HANDLE);
-static NTSTATUS NTAPI (*__NtRemoveProcessDebug)(HANDLE, HANDLE);
-static NTSTATUS NTAPI (*__NtWaitForDebugEvent)(HANDLE, BOOLEAN, PLARGE_INTEGER,
+static NTSTATUS NTAPI (*NtDebugActiveProcess_)(HANDLE, HANDLE);
+static NTSTATUS NTAPI (*NtRemoveProcessDebug_)(HANDLE, HANDLE);
+static NTSTATUS NTAPI (*NtWaitForDebugEvent_)(HANDLE, BOOLEAN, PLARGE_INTEGER,
 	PDBGUI_WAIT_STATE_CHANGE);
-static NTSTATUS NTAPI (*__NtDebugContinue)(HANDLE, PCLIENT_ID, NTSTATUS);
-static NTSTATUS NTAPI (*__NtSetInformationDebugObject)(HANDLE,
+static NTSTATUS NTAPI (*NtDebugContinue_)(HANDLE, PCLIENT_ID, NTSTATUS);
+static NTSTATUS NTAPI (*NtSetInformationDebugObject_)(HANDLE,
 	DEBUGOBJECTINFOCLASS, PVOID, ULONG, PULONG);
 
-static void __attribute__((constructor)) __ntdll_initialize(void)
+static void __attribute__((constructor)) ntdll_initialize_(void)
 {
 	if ( (ntdll = LoadLibraryW(L"ntdll.dll")) == NULL)
 		return;
 
-	__NtSuspendProcess            = IMPORT(ntdll, NtSuspendProcess);
-	__NtResumeProcess             = IMPORT(ntdll, NtResumeProcess);
-	__NtCreateThreadEx            = IMPORT(ntdll, NtCreateThreadEx);
-	__NtQueryObject               = IMPORT(ntdll, NtQueryObject);
-	__NtCreateDebugObject         = IMPORT(ntdll, NtCreateDebugObject);
-	__NtDebugActiveProcess        = IMPORT(ntdll, NtDebugActiveProcess);
-	__NtRemoveProcessDebug        = IMPORT(ntdll, NtRemoveProcessDebug);
-	__NtWaitForDebugEvent         = IMPORT(ntdll, NtWaitForDebugEvent);
-	__NtDebugContinue             = IMPORT(ntdll, NtDebugContinue);
-	__NtSetInformationDebugObject = IMPORT(ntdll, NtSetInformationDebugObject);
+	NtSuspendProcess_            = IMPORT(ntdll, NtSuspendProcess);
+	NtResumeProcess_             = IMPORT(ntdll, NtResumeProcess);
+	NtCreateThreadEx_            = IMPORT(ntdll, NtCreateThreadEx);
+	NtQueryObject_               = IMPORT(ntdll, NtQueryObject);
+	NtCreateDebugObject_         = IMPORT(ntdll, NtCreateDebugObject);
+	NtDebugActiveProcess_        = IMPORT(ntdll, NtDebugActiveProcess);
+	NtRemoveProcessDebug_        = IMPORT(ntdll, NtRemoveProcessDebug);
+	NtWaitForDebugEvent_         = IMPORT(ntdll, NtWaitForDebugEvent);
+	NtDebugContinue_             = IMPORT(ntdll, NtDebugContinue);
+	NtSetInformationDebugObject_ = IMPORT(ntdll, NtSetInformationDebugObject);
 }
 
-static void __attribute((destructor)) __ntdll_destroy(void)
+static void __attribute__((destructor)) ntdll_destroy_(void)
 {
-	__NtSuspendProcess            = NULL;
-	__NtResumeProcess             = NULL;
-	__NtCreateThreadEx            = NULL;
-	__NtQueryObject               = NULL;
-	__NtCreateDebugObject         = NULL;
-	__NtDebugActiveProcess        = NULL;
-	__NtRemoveProcessDebug        = NULL;
-	__NtWaitForDebugEvent         = NULL;
-	__NtDebugContinue             = NULL;
-	__NtSetInformationDebugObject = NULL;
+	NtSuspendProcess_            = NULL;
+	NtResumeProcess_             = NULL;
+	NtCreateThreadEx_            = NULL;
+	NtQueryObject_               = NULL;
+	NtCreateDebugObject_         = NULL;
+	NtDebugActiveProcess_        = NULL;
+	NtRemoveProcessDebug_        = NULL;
+	NtWaitForDebugEvent_         = NULL;
+	NtDebugContinue_             = NULL;
+	NtSetInformationDebugObject_ = NULL;
 
 	if (ntdll != NULL)
 		FreeLibrary(ntdll);
@@ -143,12 +143,12 @@ int pt_windows_api_nt_remove_process_debug(
 {
 	NTSTATUS ret;
 
-	if (__NtRemoveProcessDebug == NULL) {
+	if (NtRemoveProcessDebug_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtRemoveProcessDebug(ProcessHandle, DebugObjectHandle);
+	ret = NtRemoveProcessDebug_(ProcessHandle, DebugObjectHandle);
 	if (!NT_SUCCESS(ret)) {
 		pt_windows_error_winapi_set_value(RtlNtStatusToDosError(ret));
 		return -1;
@@ -166,12 +166,12 @@ int pt_windows_api_nt_set_information_debug_object(
 {
 	NTSTATUS ret;
 
-	if (__NtSetInformationDebugObject == NULL) {
+	if (NtSetInformationDebugObject_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtSetInformationDebugObject(
+	ret = NtSetInformationDebugObject_(
 		DebugObjectHandle,
 		InformationClass,
 		Information,
@@ -195,12 +195,12 @@ int pt_windows_api_nt_wait_for_debug_event(
 {
 	NTSTATUS ret;
 
-	if (__NtWaitForDebugEvent == NULL) {
+	if (NtWaitForDebugEvent_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtWaitForDebugEvent(
+	ret = NtWaitForDebugEvent_(
 		DebugObjectHandle,
 		Alertable,
 		Timeout,
@@ -220,12 +220,12 @@ int pt_windows_api_nt_debug_active_process(
 {
 	NTSTATUS ret;
 
-	if (__NtDebugActiveProcess == NULL) {
+	if (NtDebugActiveProcess_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtDebugActiveProcess(ProcessHandle, DebugObjectHandle);
+	ret = NtDebugActiveProcess_(ProcessHandle, DebugObjectHandle);
 	if (!NT_SUCCESS(ret)) {
 		pt_windows_error_winapi_set_value(RtlNtStatusToDosError(ret));
 		return -1;
@@ -241,12 +241,12 @@ int pt_windows_api_nt_debug_continue(
 {
 	NTSTATUS ret;
 
-	if (__NtDebugContinue == NULL) {
+	if (NtDebugContinue_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtDebugContinue(
+	ret = NtDebugContinue_(
 		DebugObjectHandle,
 		ClientId,
 		ContinueStatus
@@ -268,12 +268,12 @@ HANDLE pt_windows_api_nt_create_debug_object(
 	HANDLE DebugObjectHandle;
 	NTSTATUS ret;
 
-	if (__NtCreateDebugObject == NULL) {
+	if (NtCreateDebugObject_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return INVALID_HANDLE_VALUE;
 	}
 
-	ret = __NtCreateDebugObject(
+	ret = NtCreateDebugObject_(
 		&DebugObjectHandle,
 		DesiredAccess,
 		ObjectAttributes,
@@ -301,12 +301,12 @@ int pt_windows_api_nt_create_thread_ex(
 {
 	NTSTATUS ret;
 
-	if (__NtCreateThreadEx == NULL) {
+	if (NtCreateThreadEx_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtCreateThreadEx(
+	ret = NtCreateThreadEx_(
 		hThread,
 		DesiredAccess,
 		ObjectAttributes,
@@ -330,19 +330,19 @@ int pt_windows_api_nt_create_thread_ex(
 
 int pt_windows_api_have_nt_create_thread_ex(void)
 {
-	return __NtCreateThreadEx != NULL;
+	return NtCreateThreadEx_ != NULL;
 }
 
 int pt_windows_api_nt_suspend_process(HANDLE hProcess)
 {
 	NTSTATUS ret;
 
-	if (__NtSuspendProcess == NULL) {
+	if (NtSuspendProcess_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtSuspendProcess(hProcess);
+	ret = NtSuspendProcess_(hProcess);
 	if (!NT_SUCCESS(ret)) {
 		pt_windows_error_winapi_set_value(RtlNtStatusToDosError(ret));
 		return -1;
@@ -353,19 +353,19 @@ int pt_windows_api_nt_suspend_process(HANDLE hProcess)
 
 int pt_windows_api_have_nt_suspend_process(void)
 {
-	return __NtSuspendProcess != NULL;
+	return NtSuspendProcess_ != NULL;
 }
 
 int pt_windows_api_nt_resume_process(HANDLE hProcess)
 {
 	NTSTATUS ret;
 
-	if (__NtResumeProcess == NULL) {
+	if (NtResumeProcess_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtResumeProcess(hProcess);
+	ret = NtResumeProcess_(hProcess);
 	if (!NT_SUCCESS(ret)) {
 		pt_windows_error_winapi_set_value(RtlNtStatusToDosError(ret));
 		return -1;
@@ -376,7 +376,7 @@ int pt_windows_api_nt_resume_process(HANDLE hProcess)
 
 int pt_windows_api_have_nt_resume_process(void)
 {
-	return __NtResumeProcess != NULL;
+	return NtResumeProcess_ != NULL;
 }
 
 utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
@@ -388,13 +388,13 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
 	NTSTATUS ret;
 	ULONG s = 0;
 
-	if (__NtQueryObject == NULL) {
+	if (NtQueryObject_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return NULL;
 	}
 
 	/* Try with the local buffer to see if things fit. */
-	ret = __NtQueryObject(h, ObjectNameInformation, buf, sizeof buf, &s);
+	ret = NtQueryObject_(h, ObjectNameInformation, buf, sizeof buf, &s);
 	if (NT_SUCCESS(ret))
 		p = buf;
 
@@ -411,7 +411,7 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE h)
 		}
 
 		p = np;
-		ret = __NtQueryObject(h, ObjectNameInformation, p, s, &s);
+		ret = NtQueryObject_(h, ObjectNameInformation, p, s, &s);
 	}
 
 	/* Handle all non-STATUS_BUFFER_OVERFLOW errors. */
@@ -446,12 +446,12 @@ int pt_windows_api_nt_query_object(
 {
 	NTSTATUS ret;
 
-	if (__NtQueryObject == NULL) {
+	if (NtQueryObject_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __NtQueryObject(
+	ret = NtQueryObject_(
 		Handle,
 		ObjectInformationClass,
 		ObjectInformation,

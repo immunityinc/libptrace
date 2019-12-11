@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYPT_CORE_H
-#define __PYPT_CORE_H
+#ifndef PYPT_CORE_INTERNAL_H
+#define PYPT_CORE_INTERNAL_H
 
 struct pypt_core
 {
@@ -73,4 +73,4 @@ PyObject *pypt_core_quit(struct pypt_core *, PyObject *);
 };
 #endif
 
-#endif
+#endif	/* !PYPT_CORE_INTERNAL_H */

@@ -41,8 +41,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_SYMBOL_INTERNAL_H
-#define __PT_WINDOWS_SYMBOL_INTERNAL_H
+#ifndef PT_WINDOWS_SYMBOL_INTERNAL_H
+#define PT_WINDOWS_SYMBOL_INTERNAL_H
 
 #include "wrappers/dbghelp.h"
 #include "../symbol.h"
@@ -51,7 +51,7 @@
 extern "C" {
 #endif
 
-struct __pt_os_symbol_info_header
+struct pt_os_symbol_info_header_
 {
 	struct pt_windows_api_imagehlp_module64 imagehlp;
 };
@@ -62,4 +62,4 @@ extern struct pt_symbol_op windows_symbol_op;
 };
 #endif
 
-#endif  /* !__PT_WINDOWS_SYMBOL_INTERNAL_H */
+#endif  /* !_PT_WINDOWS_SYMBOL_INTERNAL_H */

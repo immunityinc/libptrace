@@ -159,7 +159,7 @@ static utf8_t *format_hresult_error_msg(HRESULT error)
 }
 
 #if 0
-static const utf8_t *__format_errno_error(int error)
+static const utf8_t *format_errno_error_(int error)
 {
 	LPWSTR msg = __wcserror(NULL);
 	utf8_t *utf8_msg;
@@ -171,18 +171,18 @@ static const utf8_t *__format_errno_error(int error)
 	if ( (utf8_msg = utf16_to_utf8(msg)) == NULL)
 		goto out_free;
 
-	strncpy(__pt_last_error_msg, utf8_msg, sizeof(__pt_last_error_msg));
-	__pt_last_error_msg[sizeof(__pt_last_error_msg) - 1] = '\0';
+	strncpy(pt_last_error_msg_, utf8_msg, sizeof(pt_last_error_msg_));
+	pt_last_error_msg_[sizeof(pt_last_error_msg_) - 1] = '\0';
 
 out_free:
 	if (utf8_msg)
 		free(utf8_msg);
 
-	return __pt_last_error_msg;
+	return pt_last_error_msg_;
 }
 #endif
 
-static inline utf8_t *__update_errmsg(utf8_t *msg)
+static inline utf8_t *update_errmsg_(utf8_t *msg)
 {
 	if (pt_windows_errmsg != NULL)
 		free(pt_windows_errmsg);
@@ -203,10 +203,10 @@ const utf8_t *pt_windows_error_strerror(void)
 	switch (winerr->type) {
 	case PT_WINDOWS_ERROR_TYPE_WINAPI:
 		errmsg = format_winapi_error_msg(winerr->winapi_error);
-        	return __update_errmsg(errmsg);
+        	return update_errmsg_(errmsg);
 	case PT_WINDOWS_ERROR_TYPE_OLE:
 		errmsg = format_hresult_error_msg(winerr->ole_error);
-        	return __update_errmsg(errmsg);
+        	return update_errmsg_(errmsg);
 	default:
 		abort();
 	}

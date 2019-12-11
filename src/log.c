@@ -47,13 +47,13 @@
 #include <libptrace/log.h>
 
 /* XXX: mark for review with multithreaded cores. This breaks. */
-struct list_head __log_hooks = LIST_HEAD_INIT(__log_hooks);
+struct list_head log_hooks_ = LIST_HEAD_INIT(log_hooks_);
 
-static int __pt_log_hook_used(struct pt_log_hook *log_hook)
+static int pt_log_hook_used_(struct pt_log_hook *log_hook)
 {
 	struct list_head *lh;
 
-	list_for_each (lh, &__log_hooks) {
+	list_for_each (lh, &log_hooks_) {
 		if (log_hook->list.next == lh->next &&
 		    log_hook->list.prev == lh->prev)
 			return 1;
@@ -69,7 +69,7 @@ void pt_log(const char *format, ...)
 
 	va_start(ap, format);
 
-	list_for_each(lh, &__log_hooks) {
+	list_for_each(lh, &log_hooks_) {
 		struct pt_log_hook *log_hook;
 
 		log_hook = list_entry(lh, struct pt_log_hook, list);
@@ -82,12 +82,12 @@ void pt_log(const char *format, ...)
 
 void pt_log_hook_register(struct pt_log_hook *log_hook)
 {
-	list_add(&log_hook->list, &__log_hooks);
+	list_add(&log_hook->list, &log_hooks_);
 }
 
 int pt_log_hook_unregister(struct pt_log_hook *log_hook)
 {
-	if (!__pt_log_hook_used(log_hook))
+	if (!pt_log_hook_used_(log_hook))
 		return -1;
 
 	list_del(&log_hook->list);

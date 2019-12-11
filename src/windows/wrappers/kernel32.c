@@ -52,49 +52,49 @@
 #define FILENAME_DEF_SIZE	256
 
 static HMODULE kernel32;
-static BOOL   WINAPI (*__IsWow64Process)(HANDLE, PBOOL);
-static SIZE_T WINAPI (*__VirtualQueryEx)(HANDLE, LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
-static BOOL   WINAPI (*__DebugSetProcessKillOnExit)(BOOL);
-static HANDLE WINAPI (*__OpenThread)(DWORD, BOOL, DWORD);
-static DWORD  WINAPI (*__GetThreadId)(HANDLE);
-static BOOL   WINAPI (*__GetProcessTimes)(HANDLE, LPFILETIME, LPFILETIME, LPFILETIME, LPFILETIME);
-static DWORD  WINAPI (*__SuspendThread)(HANDLE);
-static DWORD  WINAPI (*__Wow64SuspendThread)(HANDLE);
-static BOOL   WINAPI (*__Wow64GetThreadContext)(HANDLE, PWOW64_CONTEXT);
-static BOOL   WINAPI (*__Wow64SetThreadContext)(HANDLE, const WOW64_CONTEXT *);
-static UINT   WINAPI (*__GetDriveTypeW)(LPCWSTR);
+static BOOL   WINAPI (*IsWow64Process_)(HANDLE, PBOOL);
+static SIZE_T WINAPI (*VirtualQueryEx_)(HANDLE, LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
+static BOOL   WINAPI (*DebugSetProcessKillOnExit_)(BOOL);
+static HANDLE WINAPI (*OpenThread_)(DWORD, BOOL, DWORD);
+static DWORD  WINAPI (*GetThreadId_)(HANDLE);
+static BOOL   WINAPI (*GetProcessTimes_)(HANDLE, LPFILETIME, LPFILETIME, LPFILETIME, LPFILETIME);
+static DWORD  WINAPI (*SuspendThread_)(HANDLE);
+static DWORD  WINAPI (*Wow64SuspendThread_)(HANDLE);
+static BOOL   WINAPI (*Wow64GetThreadContext_)(HANDLE, PWOW64_CONTEXT);
+static BOOL   WINAPI (*Wow64SetThreadContext_)(HANDLE, const WOW64_CONTEXT *);
+static UINT   WINAPI (*GetDriveTypeW_)(LPCWSTR);
 
-static void __attribute__((constructor)) __kernel32_initialize(void)
+static void __attribute__((constructor)) kernel32_initialize_(void)
 {
 	if ( (kernel32 = LoadLibraryW(L"kernel32.dll")) == NULL)
 		return;
 
-	__VirtualQueryEx         = IMPORT(kernel32, VirtualQueryEx);
-	__IsWow64Process         = IMPORT(kernel32, IsWow64Process);
-	__DebugSetProcessKillOnExit = IMPORT(kernel32, DebugSetProcessKillOnExit);
-	__OpenThread             = IMPORT(kernel32, OpenThread);
-	__GetThreadId            = IMPORT(kernel32, GetThreadId);
-	__GetProcessTimes        = IMPORT(kernel32, GetProcessTimes);
-	__SuspendThread          = IMPORT(kernel32, SuspendThread);
-	__Wow64SuspendThread     = IMPORT(kernel32, Wow64SuspendThread);
-	__Wow64GetThreadContext  = IMPORT(kernel32, Wow64GetThreadContext);
-	__Wow64SetThreadContext  = IMPORT(kernel32, Wow64SetThreadContext);
-	__GetDriveTypeW          = IMPORT(kernel32, GetDriveTypeW);
+	VirtualQueryEx_         = IMPORT(kernel32, VirtualQueryEx);
+	IsWow64Process_         = IMPORT(kernel32, IsWow64Process);
+	DebugSetProcessKillOnExit_ = IMPORT(kernel32, DebugSetProcessKillOnExit);
+	OpenThread_             = IMPORT(kernel32, OpenThread);
+	GetThreadId_            = IMPORT(kernel32, GetThreadId);
+	GetProcessTimes_        = IMPORT(kernel32, GetProcessTimes);
+	SuspendThread_          = IMPORT(kernel32, SuspendThread);
+	Wow64SuspendThread_     = IMPORT(kernel32, Wow64SuspendThread);
+	Wow64GetThreadContext_  = IMPORT(kernel32, Wow64GetThreadContext);
+	Wow64SetThreadContext_  = IMPORT(kernel32, Wow64SetThreadContext);
+	GetDriveTypeW_          = IMPORT(kernel32, GetDriveTypeW);
 }
 
-static void __attribute((destructor)) __kernel32_destroy(void)
+static void __attribute__((destructor)) __kernel32_destroy(void)
 {
-	__VirtualQueryEx         = NULL;
-	__IsWow64Process         = NULL;
-	__DebugSetProcessKillOnExit = NULL;
-	__OpenThread             = NULL;
-	__GetThreadId            = NULL;
-	__GetProcessTimes        = NULL;
-	__SuspendThread          = NULL;
-	__Wow64SuspendThread     = NULL;
-	__Wow64GetThreadContext  = NULL;
-	__Wow64SetThreadContext  = NULL;
-	__GetDriveTypeW          = NULL;
+	VirtualQueryEx_         = NULL;
+	IsWow64Process_         = NULL;
+	DebugSetProcessKillOnExit_ = NULL;
+	OpenThread_             = NULL;
+	GetThreadId_            = NULL;
+	GetProcessTimes_        = NULL;
+	SuspendThread_          = NULL;
+	Wow64SuspendThread_     = NULL;
+	Wow64GetThreadContext_  = NULL;
+	Wow64SetThreadContext_  = NULL;
+	GetDriveTypeW_          = NULL;
 
 	if (kernel32 != NULL)
 		FreeLibrary(kernel32);
@@ -105,7 +105,7 @@ int pt_windows_api_get_drive_type(const utf8_t *pathname)
 	utf16_t *wpathname;
 	UINT ret;
 
-	if (__GetDriveTypeW == NULL) {
+	if (GetDriveTypeW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
@@ -114,7 +114,7 @@ int pt_windows_api_get_drive_type(const utf8_t *pathname)
 		return -1;
 
 	/* GetDriveType() does not set any error. */
-	ret = __GetDriveTypeW(wpathname);
+	ret = GetDriveTypeW_(wpathname);
 
 	free(wpathname);
 
@@ -123,12 +123,12 @@ int pt_windows_api_get_drive_type(const utf8_t *pathname)
 
 int pt_windows_api_wow64_set_thread_context(HANDLE h, const WOW64_CONTEXT *ctx)
 {
-	if (__Wow64SetThreadContext == NULL) {
+	if (Wow64SetThreadContext_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__Wow64SetThreadContext(h, ctx) == 0) {
+	if (Wow64SetThreadContext_(h, ctx) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -138,12 +138,12 @@ int pt_windows_api_wow64_set_thread_context(HANDLE h, const WOW64_CONTEXT *ctx)
 
 int pt_windows_api_wow64_get_thread_context(HANDLE h, PWOW64_CONTEXT ctx)
 {
-	if (__Wow64GetThreadContext == NULL) {
+	if (Wow64GetThreadContext_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__Wow64GetThreadContext(h, ctx) == 0) {
+	if (Wow64GetThreadContext_(h, ctx) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -153,12 +153,12 @@ int pt_windows_api_wow64_get_thread_context(HANDLE h, PWOW64_CONTEXT ctx)
 
 int pt_windows_api_suspend_thread(HANDLE h)
 {
-	if (__SuspendThread == NULL) {
+	if (SuspendThread_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__SuspendThread(h) == (DWORD)-1) {
+	if (SuspendThread_(h) == (DWORD)-1) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -168,12 +168,12 @@ int pt_windows_api_suspend_thread(HANDLE h)
 
 int pt_windows_api_wow64_suspend_thread(HANDLE h)
 {
-	if (__Wow64SuspendThread == NULL) {
+	if (Wow64SuspendThread_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__Wow64SuspendThread(h) == (DWORD)-1) {
+	if (Wow64SuspendThread_(h) == (DWORD)-1) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -190,13 +190,13 @@ int pt_windows_api_get_process_times(
 {
 	BOOL ret;
 
-	if (__GetProcessTimes == NULL) {
+	if (GetProcessTimes_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __GetProcessTimes(hProcess, lpCreationTime, lpExitTime,
-	                        lpKernelTime, lpUserTime);
+	ret = GetProcessTimes_(hProcess, lpCreationTime, lpExitTime,
+	                       lpKernelTime, lpUserTime);
 	if (ret == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
@@ -207,19 +207,19 @@ int pt_windows_api_get_process_times(
 
 int pt_windows_api_have_get_process_times(void)
 {
-	return __GetProcessTimes != NULL;
+	return GetProcessTimes_ != NULL;
 }
 
 DWORD pt_windows_api_get_thread_id(HANDLE hThread)
 {
 	DWORD ret;
 
-	if (__GetThreadId == NULL) {
+	if (GetThreadId_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return 0;
 	}
 
-	if ( (ret = __GetThreadId(hThread)) == 0)
+	if ( (ret = GetThreadId_(hThread)) == 0)
 		pt_windows_error_winapi_set();
 
 	return ret;
@@ -227,7 +227,7 @@ DWORD pt_windows_api_get_thread_id(HANDLE hThread)
 
 int pt_windows_api_have_get_thread_id(void)
 {
-	return __GetThreadId != NULL;
+	return GetThreadId_ != NULL;
 }
 
 HANDLE pt_windows_api_open_thread(DWORD dwDesiredAccess, BOOL bInheritHandle,
@@ -235,12 +235,12 @@ HANDLE pt_windows_api_open_thread(DWORD dwDesiredAccess, BOOL bInheritHandle,
 {
 	HANDLE ret;
 
-	if (__OpenThread == NULL) {
+	if (OpenThread_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return NULL;
 	}
 
-	ret = __OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId);
+	ret = OpenThread_(dwDesiredAccess, bInheritHandle, dwThreadId);
 	if (ret == NULL) {
 		pt_windows_error_winapi_set();
 		return NULL;
@@ -251,17 +251,17 @@ HANDLE pt_windows_api_open_thread(DWORD dwDesiredAccess, BOOL bInheritHandle,
 
 int pt_windows_api_have_open_thread(void)
 {
-	return __OpenThread != NULL;
+	return OpenThread_ != NULL;
 }
 
 int pt_windows_api_debug_set_process_kill_on_exit(BOOL KillOnExit)
 {
-	if (__DebugSetProcessKillOnExit == NULL) {
+	if (DebugSetProcessKillOnExit_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__DebugSetProcessKillOnExit(KillOnExit) == 0) {
+	if (DebugSetProcessKillOnExit_(KillOnExit) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -271,17 +271,17 @@ int pt_windows_api_debug_set_process_kill_on_exit(BOOL KillOnExit)
 
 int pt_windows_api_have_debug_set_process_kill_on_exit(void)
 {
-	return __DebugSetProcessKillOnExit != NULL;
+	return DebugSetProcessKillOnExit_ != NULL;
 }
 
 int pt_windows_api_is_wow64_process(HANDLE hProcess, PBOOL Wow64Process)
 {
-	if (__IsWow64Process == NULL) {
+	if (IsWow64Process_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__IsWow64Process(hProcess, Wow64Process) == 0) {
+	if (IsWow64Process_(hProcess, Wow64Process) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -291,7 +291,7 @@ int pt_windows_api_is_wow64_process(HANDLE hProcess, PBOOL Wow64Process)
 
 int pt_windows_api_have_is_wow64_process(void)
 {
-	return __IsWow64Process != NULL;
+	return IsWow64Process_ != NULL;
 }
 
 SIZE_T pt_windows_api_virtual_query_ex(HANDLE hProcess, LPCVOID lpAddress,
@@ -300,12 +300,12 @@ SIZE_T pt_windows_api_virtual_query_ex(HANDLE hProcess, LPCVOID lpAddress,
 {
 	SIZE_T ret;
 
-	if (__VirtualQueryEx == NULL) {
+	if (VirtualQueryEx_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return 0;
 	}
 
-	ret = __VirtualQueryEx(hProcess, lpAddress, lpBuffer, dwLength);
+	ret = VirtualQueryEx_(hProcess, lpAddress, lpBuffer, dwLength);
 	if (ret == 0)
 		pt_windows_error_winapi_set();
 
@@ -314,7 +314,7 @@ SIZE_T pt_windows_api_virtual_query_ex(HANDLE hProcess, LPCVOID lpAddress,
 
 int pt_windows_api_have_virtual_query_ex(void)
 {
-	return __VirtualQueryEx != NULL;
+	return VirtualQueryEx_ != NULL;
 }
 
 HMODULE pt_windows_load_library(const utf8_t *name)

@@ -44,8 +44,8 @@
  * Author: Massimiliano Oldani <max@immunityinc.com>
  *
  */
-#ifndef __PE_H
-#define __PE_H
+#ifndef PT_PE_INTERNAL_H
+#define PT_PE_INTERNAL_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -463,7 +463,7 @@ struct pe_context
 {
 	int					flags;
 	enum pe_error				error;
-	struct pt_file				*__file;
+	struct pt_file				*file_;
 	struct pe_image_file_header		img_header;
 
 	off_t					opt_header_offset;
@@ -628,4 +628,4 @@ char       *pe_delay_directory_get_function_name64(struct pe_context *, int, int
 };
 #endif
 
-#endif
+#endif	/* !PT_PE_INTERNAL_H */

@@ -20,8 +20,8 @@
  *
  * Macros for (de)serialization of integers.
  */
-#ifndef __GETPUT_H
-#define __GETPUT_H
+#ifndef PT_GETPUT_INTERNAL_H
+#define PT_GETPUT_INTERNAL_H
 
 #include <stdint.h>
 
@@ -141,4 +141,4 @@
 		(cp)[0] = (value);					\
 	} while (0)
 
-#endif	/* !__GETPUT_H */
+#endif	/* !PT_GETPUT_INTERNAL_H */

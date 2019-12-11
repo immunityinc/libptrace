@@ -37,8 +37,8 @@
  *
  * Author: Ronald Huizer <ronald@immunityinc.com>
  */
-#ifndef __PT_ERROR_INTERNAL_H
-#define __PT_ERROR_INTERNAL_H
+#ifndef PT_ERROR_INTERNAL_H
+#define PT_ERROR_INTERNAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -91,4 +91,4 @@ extern __thread struct pt_error pt_errno_saved;
 };
 #endif
 
-#endif
+#endif	/* !PT_ERROR_INTERNAL_H */

@@ -26,9 +26,9 @@ extern "C" {
 
 #include <inttypes.h>
 
-#define container_of(ptr, type, member) ({                      \
-	const typeof(((type *)0)->member) *__ptr = (ptr);       \
-	(type *)((char *)__ptr - (uintptr_t)(&((type *)0)->member)); })
+#define container_of(ptr, type, member) ({				\
+	const typeof(((type *)0)->member) *ptr_ = (ptr);		\
+	(type *)((char *)ptr_ - (uintptr_t)(&((type *)0)->member)); })
 
 struct avl_node {
 	struct avl_node		*left;

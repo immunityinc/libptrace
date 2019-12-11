@@ -193,22 +193,22 @@ int balance(struct avl_node *an)
 	return height(an->right) - height(an->left);
 }
 
-static void rebalance_node(struct avl_node **_root)
+static void rebalance_node(struct avl_node **root_)
 {
-	struct avl_node *root = *_root;
+	struct avl_node *root = *root_;
 	int bal;
 
 	bal = balance(root);
 	if (bal == -2) {
 		if (balance(root->left) <= 0)
-			rotate_right(_root);
+			rotate_right(root_);
 		else
-			rotate_left_right(_root);
+			rotate_left_right(root_);
 	} else if (bal == 2) {
 		if (balance(root->right) < 0)
-			rotate_right_left(_root);
+			rotate_right_left(root_);
 		else
-			rotate_left(_root);
+			rotate_left(root_);
 	}
 }
 

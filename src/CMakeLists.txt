@@ -44,7 +44,7 @@ set(SOURCES arch.h avl.c avl.h breakpoint.c breakpoint.h breakpoint_hw.c
             breakpoint_hw.h breakpoint_sw.c breakpoint_sw.h charset.c
             compat.c compat.h error.h error.c event.c event.h
             file.c file.h getput.h interval_tree.h core.c symbol.c
-            libptrace_config.h core.h libptrace_x86.h list.h log.c log.h
+            core.h libptrace_x86.h list.h log.c log.h
             mmap.h module.c module.h pe.c pe.h process.c process.h registers.c
             registers.h symbol.h thread.c thread.h inject.c
 	    stringlist.c stringlist.h breakpoint_x86.c breakpoint_x86.h

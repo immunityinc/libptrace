@@ -40,9 +40,9 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_COMMON_H
-#define __PT_WINDOWS_COMMON_H
+#ifndef PT_WINDOWS_COMMON_INTERNAL_H
+#define PT_WINDOWS_COMMON_INTERNAL_H
 
 #define HANDLE_VALID(h)	((h) != NULL && (h) != INVALID_HANDLE_VALUE)
 
-#endif
+#endif	/* !PT_WINDOWS_COMMON_INTERNAL_H */

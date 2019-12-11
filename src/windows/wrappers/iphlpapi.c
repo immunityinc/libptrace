@@ -55,26 +55,26 @@ DWORD WINAPI
 AllocateAndGetUdpExTableFromStack(PVOID *, BOOL, HANDLE, DWORD, DWORD);
 
 static HMODULE iphlpapi;
-static DWORD WINAPI (*__AllocateAndGetTcpExTableFromStack)
+static DWORD WINAPI (*AllocateAndGetTcpExTableFromStack_)
 	(PVOID *, BOOL, HANDLE, DWORD, DWORD);
-static DWORD WINAPI (*__AllocateAndGetUdpExTableFromStack)
+static DWORD WINAPI (*AllocateAndGetUdpExTableFromStack_)
 	(PVOID *, BOOL, HANDLE, DWORD, DWORD);
 
-static void __attribute__((constructor)) __iphlpapi_initialize(void)
+static void __attribute__((constructor)) iphlpapi_initialize_(void)
 {
 	if ( (iphlpapi = LoadLibraryW(L"iphlpapi.dll")) == NULL)
 		return;
 
-	__AllocateAndGetTcpExTableFromStack =
+	AllocateAndGetTcpExTableFromStack_ =
 		IMPORT(iphlpapi, AllocateAndGetTcpExTableFromStack);
-	__AllocateAndGetUdpExTableFromStack =
+	AllocateAndGetUdpExTableFromStack_ =
 		IMPORT(iphlpapi, AllocateAndGetUdpExTableFromStack);
 }
 
-static void __attribute((destructor)) __iphlpapi_destroy(void)
+static void __attribute__((destructor)) iphlpapi_destroy_(void)
 {
-	__AllocateAndGetTcpExTableFromStack = NULL;
-	__AllocateAndGetUdpExTableFromStack = NULL;
+	AllocateAndGetTcpExTableFromStack_ = NULL;
+	AllocateAndGetUdpExTableFromStack_ = NULL;
 
 	if (iphlpapi != NULL)
 		FreeLibrary(iphlpapi);
@@ -89,12 +89,12 @@ int pt_windows_api_allocate_and_get_tcp_ex_table_from_stack(
 {
 	DWORD ret;
 
-	if (__AllocateAndGetTcpExTableFromStack == NULL) {
+	if (AllocateAndGetTcpExTableFromStack_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __AllocateAndGetTcpExTableFromStack(
+	ret = AllocateAndGetTcpExTableFromStack_(
 		ppTcpTable,
 		bOrder,
 		hHeap,
@@ -119,12 +119,12 @@ int pt_windows_api_allocate_and_get_udp_ex_table_from_stack(
 {
 	DWORD ret;
 
-	if (__AllocateAndGetUdpExTableFromStack == NULL) {
+	if (AllocateAndGetUdpExTableFromStack_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __AllocateAndGetUdpExTableFromStack(
+	ret = AllocateAndGetUdpExTableFromStack_(
 		ppUDPTable,
 		bOrder,
 		hHeap,

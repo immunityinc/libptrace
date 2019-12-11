@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_IPHLPAPI_H
-#define __PT_WINDOWS_API_IPHLPAPI_H
+#ifndef PT_WINDOWS_API_IPHLPAPI_H
+#define PT_WINDOWS_API_IPHLPAPI_H
 
 #include <windows.h>
 #include <libptrace/charset.h>
@@ -59,4 +59,4 @@ int pt_windows_api_allocate_and_get_udp_ex_table_from_stack
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_IPHLPAPI_H */

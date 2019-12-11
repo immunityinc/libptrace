@@ -132,9 +132,9 @@ struct pe_img_opt_hdr_operations pe64_img_opt_hdr_operations = {
 	.section_alignment_get  = pe64_opt_hdr_section_alignment_get,
 };
 
-static int __pe_write32(struct pe_context *pex, off_t offset, uint32_t dword)
+static int pe_write32_(struct pe_context *pex, off_t offset, uint32_t dword)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	uint8_t buf[4];
 
 	/* Seek to the location of the 'subsystem' entry in the optional
@@ -158,9 +158,9 @@ static int __pe_write32(struct pe_context *pex, off_t offset, uint32_t dword)
 	return 0;
 }
 
-static int __pe_write16(struct pe_context *pex, off_t offset, uint16_t word)
+static int pe_write16_(struct pe_context *pex, off_t offset, uint16_t word)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	uint8_t buf[2];
 
 	/* Seek to the location of the 'subsystem' entry in the optional
@@ -189,9 +189,9 @@ const char *pe_errstr(int error)
 	return pe_error_strings[error];
 }
 
-static inline void __pe_rva_translation_init(struct pe_context *pex)
+static inline void pe_rva_translation_init_(struct pe_context *pex)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 
 	if (file->file_ops == &pt_file_c_operations)
 		pex->flags |= PE_FLAG_RVA_TRANSLATION;
@@ -316,15 +316,15 @@ int pe_open(struct pe_context *pex, struct pt_file *file, int flags)
 		return -1;
 	}
 
-	pex->file__ = file;
-	__pe_rva_translation_init(pex);
+	pex->file_ = file;
+	pe_rva_translation_init_(pex);
 
 	return 0;
 }
 
 void pe_close(struct pe_context *pex)
 {
-	pex->file__->file_ops->close(pex->file__);
+	pex->file_->file_ops->close(pex->file_);
 
 	if (pex->import_directory.array)
 		free(pex->import_directory.array);
@@ -338,7 +338,7 @@ void pe_close(struct pe_context *pex)
 
 char *pe_ascii_string_read(struct pe_context *pex, off_t va)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	size_t length = 0;
 	char buf[4096];
 	off_t off_old;
@@ -398,7 +398,7 @@ err:
 
 int pe_data_read(struct pe_context *pex, off_t foffset, char *buffer, uint32_t length)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t off_old;
 	ssize_t ret;
 
@@ -755,7 +755,7 @@ int pe32_opt_hdr_major_img_version_set(struct pe_context *pex, uint16_t version)
 			   major_image_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -790,7 +790,7 @@ int pe32_opt_hdr_minor_img_version_set(struct pe_context *pex, uint16_t version)
 			   minor_image_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -825,7 +825,7 @@ int pe32_opt_hdr_major_os_version_set(struct pe_context *pex, uint16_t version)
 			   major_operating_system_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -860,7 +860,7 @@ int pe32_opt_hdr_minor_os_version_set(struct pe_context *pex, uint16_t version)
 			   minor_operating_system_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -895,7 +895,7 @@ int pe32_opt_hdr_major_ss_version_set(struct pe_context *pex, uint16_t version)
 			   major_subsystem_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -930,7 +930,7 @@ int pe32_opt_hdr_minor_ss_version_set(struct pe_context *pex, uint16_t version)
 			   minor_subsystem_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -964,7 +964,7 @@ int pe32_opt_hdr_subsystem_set(struct pe_context *pex, uint16_t subsystem)
 	offset += offsetof(struct pe32_image_optional_header, subsystem);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, subsystem) == -1)
+	if (pe_write16_(pex, offset, subsystem) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -998,7 +998,7 @@ int pe32_opt_hdr_entry_point_set(struct pe_context *pex, uint32_t entry_point_ad
 	offset += offsetof(struct pe32_image_optional_header, address_of_entry_point);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, entry_point_addr) == -1) {
+	if (pe_write32_(pex, offset, entry_point_addr) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 	}
@@ -1034,7 +1034,7 @@ int pe32_opt_hdr_base_of_code_set(struct pe_context *pex, uint32_t base)
 	offset += offsetof(struct pe32_image_optional_header, base_of_code);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, base) == -1) {
+	if (pe_write32_(pex, offset, base) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 	}
@@ -1070,7 +1070,7 @@ int pe32_opt_hdr_size_of_code_set(struct pe_context *pex, uint32_t size)
 	offset += offsetof(struct pe32_image_optional_header, size_of_code);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, size) == -1) {
+	if (pe_write32_(pex, offset, size) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 }
@@ -1118,7 +1118,7 @@ int pe64_opt_hdr_major_img_version_set(struct pe_context *pex, uint16_t version)
 			   major_image_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1153,7 +1153,7 @@ int pe64_opt_hdr_minor_img_version_set(struct pe_context *pex, uint16_t version)
 			   minor_image_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1188,7 +1188,7 @@ int pe64_opt_hdr_major_os_version_set(struct pe_context *pex, uint16_t version)
 			   major_operating_system_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1223,7 +1223,7 @@ int pe64_opt_hdr_minor_os_version_set(struct pe_context *pex, uint16_t version)
 			   minor_operating_system_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1258,7 +1258,7 @@ int pe64_opt_hdr_major_ss_version_set(struct pe_context *pex, uint16_t version)
 			   major_subsystem_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1293,7 +1293,7 @@ int pe64_opt_hdr_minor_ss_version_set(struct pe_context *pex, uint16_t version)
 			   minor_subsystem_version);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, version) == -1)
+	if (pe_write16_(pex, offset, version) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1327,7 +1327,7 @@ int pe64_opt_hdr_subsystem_set(struct pe_context *pex, uint16_t subsystem)
 	offset += offsetof(struct pe64_image_optional_header, subsystem);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write16(pex, offset, subsystem) == -1)
+	if (pe_write16_(pex, offset, subsystem) == -1)
 		return -1;
 
 	/* Write was successful.  Update cached copy. */
@@ -1361,7 +1361,7 @@ int pe64_opt_hdr_entry_point_set(struct pe_context *pex, uint32_t entry_point_ad
 	offset += offsetof(struct pe64_image_optional_header, address_of_entry_point);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, entry_point_addr) == -1) {
+	if (pe_write32_(pex, offset, entry_point_addr) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 	}
@@ -1397,7 +1397,7 @@ int pe64_opt_hdr_base_of_code_set(struct pe_context *pex, uint32_t base)
 	offset += offsetof(struct pe64_image_optional_header, base_of_code);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, base) == -1) {
+	if (pe_write32_(pex, offset, base) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 	}
@@ -1433,7 +1433,7 @@ int pe64_opt_hdr_size_of_code_set(struct pe_context *pex, uint32_t size)
 	offset += offsetof(struct pe64_image_optional_header, size_of_code);
 
 	/* This sets pex->error, so we do not need to do it. */
-	if (__pe_write32(pex, offset, size) == -1) {
+	if (pe_write32_(pex, offset, size) == -1) {
 	        pex->error = PE_ERROR_WRITE_OPTIONAL_HEADER;
 		return -1;
 	}
@@ -1539,7 +1539,7 @@ rva_t pe_directory_entry_delay(struct pe_context *pex)
 }
 
 /* PE section table functions */
-static void __pe_display_section(struct pe_image_section_header *s)
+static void pe_display_section_(struct pe_image_section_header *s)
 {
 	printf("<section>\n");
 	printf("\t-> name: %s\n", s->name);
@@ -1558,7 +1558,7 @@ int pe_section_display_by_name(struct pe_context *pex, const char *name)
 		// pex->section_header[i] will _not_ be out of bound
 		sect_hdr = &pex->section_header[i];
 		if (!strcmp(name, (const char *)sect_hdr->name)) {
-			__pe_display_section(sect_hdr);
+			pe_display_section_(sect_hdr);
 			return 0;
 		}
 	}
@@ -1574,7 +1574,7 @@ int pe_section_display_by_idx(struct pe_context *pex, uint16_t idx)
 		return -1;
 	}
 
-	__pe_display_section(&pex->section_header[idx]);
+	pe_display_section_(&pex->section_header[idx]);
 	return 0;
 }
 
@@ -1626,7 +1626,7 @@ void *pe_section_from_rva_get(struct pe_context *pex, rva_t rva)
 /* PE TLS Callbacks directory functions */
 int pe32_tls_callback_directory_get(struct pe_context *pex, struct pe32_image_tls_directory *d)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	uint32_t dir_entry_size;
 	off_t off_tls, off_old;
 	rva_t rva_tls;
@@ -1680,7 +1680,7 @@ err:
 /* PE export directory functions */
 int pe_export_directory_get(struct pe_context *pex, struct pe_image_export_directory *d)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t off_export, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_export;
@@ -1734,7 +1734,7 @@ err:
 
 int pe_import_directory_table_get(struct pe_context *pex, struct pe_image_import_directory_table  *t)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t off_import, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_import;
@@ -1850,7 +1850,7 @@ char *pe_import_directory_get_function_name32(struct pe_context *pex, int idx_mo
 	struct pe_image_import_descriptor *d;
 	struct image_thunk_data32 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -1951,7 +1951,7 @@ char *pe_delay_directory_get_function_name32(struct pe_context *pex, int idx_mod
 	struct pe_image_delay_descriptor *d;
 	struct image_thunk_data32 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -2049,7 +2049,7 @@ char *pe_import_directory_get_function_name64(struct pe_context *pex, int idx_mo
 	struct pe_image_import_descriptor *d;
 	struct image_thunk_data64 thunk;
 	struct image_import_by_name name;
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	char tmp[256];
 	rva_t ilt_rva;
 	off_t  old_offset, offset;
@@ -2253,7 +2253,7 @@ rva_t pe_import_directory_get_function_ptr_iat64(struct pe_context *pex, int idx
 
 int pe_delay_directory_table_get(struct pe_context *pex, struct pe_image_delay_directory_table *t)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t off_delay, off_old;
 	uint32_t dir_entry_size;
 	rva_t rva_delay;
@@ -2317,7 +2317,7 @@ rva_t *
 pe_export_directory_get_names_rva(struct pe_context *pex, struct pe_image_export_directory *d)
 {
 	size_t size = d->number_of_names * sizeof(rva_t);
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t off_old, offset_of_names;
 	ssize_t ret;
 	rva_t *vas;
@@ -2366,7 +2366,7 @@ err:
 int
 pe_export_directory_get_index_of_ordinal(struct pe_context *pex, struct pe_image_export_directory *d, uint16_t ordinal)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t offset_of_ordinals;
 	uint16_t *ordinals;
 	ssize_t ret;
@@ -2415,7 +2415,7 @@ uint32_t
 pe32_tls_callback_directory_get_function_va(struct pe_context *pex,
 	struct pe32_image_tls_directory *d, uint32_t base, int index)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t offset_of_functions;
 	uint32_t address;
 	ssize_t ret;
@@ -2456,7 +2456,7 @@ pe32_tls_callback_directory_get_function_va(struct pe_context *pex,
 rva_t
 pe_export_directory_get_function_rva(struct pe_context *pex, struct pe_image_export_directory *d, int index)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t offset_of_functions;
 	rva_t address;
 	ssize_t ret;
@@ -2492,7 +2492,7 @@ pe_export_directory_get_function_rva(struct pe_context *pex, struct pe_image_exp
 int32_t
 pe_export_directory_get_names_ordinal(struct pe_context *pex, struct pe_image_export_directory *d, int index)
 {
-	struct pt_file *file = pex->file__;
+	struct pt_file *file = pex->file_;
 	off_t offset_of_name_ordinals;
 	ordinal_t ordinal;
 	ssize_t ret;

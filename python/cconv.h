@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_CCONV_H
-#define __PYTHON_PTRACE_CCONV_H
+#ifndef PYPT_CCONV_INTERNAL_H
+#define PYPT_CCONV_INTERNAL_H
 
 #include <python/Python.h>
 
@@ -53,4 +53,4 @@ struct pypt_cconv
 
 extern PyTypeObject pypt_cconv_type;
 
-#endif
+#endif	/* !PYPT_CCONV_INTERNAL_H */

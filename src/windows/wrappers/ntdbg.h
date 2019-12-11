@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_NTDBG_H
-#define __PT_WINDOWS_API_NTDBG_H
+#ifndef PT_WINDOWS_API_NTDBG_H
+#define PT_WINDOWS_API_NTDBG_H
 
 #include <windows.h>
 #include <winternl.h>
@@ -141,4 +141,4 @@ typedef struct _DBGUI_WAIT_STATE_CHANGE {
 	} StateInfo;
 } DBGUI_WAIT_STATE_CHANGE, *PDBGUI_WAIT_STATE_CHANGE;
 
-#endif
+#endif	/* !PT_WINDOWS_API_NTDBG_H */

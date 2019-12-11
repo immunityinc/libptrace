@@ -67,14 +67,14 @@ MinGW and CMake.  The build system has been tested on Ubuntu 19.04.
 
 A 32-bit installer can be built using:
 ```
-cmake -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86.cmake .
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x86.cmake .
 make
 makensis libptrace-setup.nsi
 ```
 
 A 64-bit bit installer can be built using:
 ```
-cmake -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x64.cmake .
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=mingw-w64-x64.cmake .
 make
 makensis -DUSE64 libptrace-setup.nsi
 ```

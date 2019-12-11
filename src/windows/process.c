@@ -151,7 +151,7 @@ int pt_windows_process_brk(struct pt_process *process)
  * attaching, which means that during the initial attach we may miss
  * some events.
  */
-void __pt_process_detach_bottom(struct pt_process *process)
+void pt_process_detach_bottom_(struct pt_process *process)
 {
 	struct pt_breakpoint_internal *bp;
 	struct pt_thread *thread;
@@ -170,7 +170,7 @@ void __pt_process_detach_bottom(struct pt_process *process)
 	process->state = PT_PROCESS_STATE_DETACH_TOP;
 }
 
-int __pt_process_detach_top(struct pt_core *core, struct pt_process *process)
+int pt_process_detach_top_(struct pt_core *core, struct pt_process *process)
 {
 	HANDLE debug_object_handle;
 	HANDLE process_handle;
@@ -198,7 +198,7 @@ int __pt_process_detach_top(struct pt_core *core, struct pt_process *process)
 	return 0;
 }
 
-static int __pt_process_resume_per_thread(struct pt_process *process)
+static int pt_process_resume_per_thread_(struct pt_process *process)
 {
 	struct pt_thread *thread;
 	int ret = 0;
@@ -212,7 +212,7 @@ static int __pt_process_resume_per_thread(struct pt_process *process)
 /* XXX: racy if we call this when there is a running thread in the process
  * creating new threads.
  */
-static int __pt_process_suspend_per_thread(struct pt_process *process)
+static int pt_process_suspend_per_thread_(struct pt_process *process)
 {
 	struct pt_thread *thread;
 	int ret = 0;
@@ -235,7 +235,7 @@ int pt_windows_process_suspend(struct pt_process *process)
 
 	h = pt_windows_process_handle_get(process);
 	if (pt_windows_api_nt_suspend_process(h) == -1)
-		return __pt_process_suspend_per_thread(process);
+		return pt_process_suspend_per_thread_(process);
 
 	return 0;
 }
@@ -251,7 +251,7 @@ int pt_windows_process_resume(struct pt_process *process)
 
 	h = pt_windows_process_handle_get(process);
 	if (pt_windows_api_nt_resume_process(h) == -1)
-		return __pt_process_resume_per_thread(process);
+		return pt_process_resume_per_thread_(process);
 
 	return 0;
 }
@@ -370,8 +370,8 @@ pt_address_t pt_process_export_find(struct pt_process *process, const char *symb
 	return ret;
 }
 
-static int __create_remote_thread(struct pt_process *process,
-                                  const void *handler, const void *cookie)
+static int create_remote_thread_(struct pt_process *process,
+                                 const void *handler, const void *cookie)
 {
 	HANDLE handle = pt_windows_process_handle_get(process);
 	HANDLE th;
@@ -400,7 +400,7 @@ NTSTATUS WINAPI NtCreateThreadEx(
 	LPVOID lpBytesBuffer
 );
 
-struct __create_thread_ex_struct
+struct create_thread_ex_struct_
 {
 	ULONG_PTR	size;
 	ULONG_PTR	unknown1;
@@ -413,11 +413,11 @@ struct __create_thread_ex_struct
 	ULONG_PTR	unknown8;
 };
 
-static int __nt_create_thread_ex(struct pt_process *process,
-                                 const void *handler, const void *cookie)
+static int nt_create_thread_ex_(struct pt_process *process,
+                                const void *handler, const void *cookie)
 {
 	HANDLE handle = pt_windows_process_handle_get(process);
-	struct __create_thread_ex_struct ctx;
+	struct create_thread_ex_struct_ ctx;
 	DWORD temp1 = 0, temp2 = 0;
 	NTSTATUS ret;
 	HANDLE th;
@@ -473,7 +473,7 @@ static int __nt_create_thread_ex(struct pt_process *process,
 	return (int)id;
 }
 
-static inline int __use_nt_create_thread_ex(OSVERSIONINFOEX *version)
+static inline int use_nt_create_thread_ex_(OSVERSIONINFOEX *version)
 {
 	if (version->dwMajorVersion != 6)
 		return 0;
@@ -502,12 +502,12 @@ int pt_windows_process_thread_create(struct pt_process *process,
 		return -1;
 	}
 
-	if (__use_nt_create_thread_ex(&version)) {
+	if (use_nt_create_thread_ex_(&version)) {
 		pt_log("%s(): using NtCreateThreadEx()\n", __FUNCTION__);
-		return __nt_create_thread_ex(process, handler, cookie);
+		return nt_create_thread_ex_(process, handler, cookie);
 	} else {
 		pt_log("%s(): using CreateRemoteThread()\n", __FUNCTION__);
-		return __create_remote_thread(process, handler, cookie);
+		return create_remote_thread_(process, handler, cookie);
 	}
 }
 

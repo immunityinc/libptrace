@@ -40,9 +40,9 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_COMMON_H
-#define __PT_WINDOWS_API_COMMON_H
+#ifndef PT_WINDOWS_API_COMMON_H
+#define PT_WINDOWS_API_COMMON_H
 
 #define IMPORT(m, s) ((typeof(&s))GetProcAddress((m), #s))
 
-#endif
+#endif	/* !PT_WINDOWS_API_COMMON_H */

@@ -41,8 +41,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_SYMBOL_H
-#define __LIBPTRACE_SYMBOL_H
+#ifndef PT_SYMBOL_INTERNAL_H
+#define PT_SYMBOL_INTERNAL_H
 
 #include <stdlib.h>
 #include <libptrace/charset.h>
@@ -67,7 +67,7 @@ struct pt_symbol_manager
 	struct pt_symbol_op *sop;
 
 	/* constructor arg */
-	void *__private;
+	void *private_;
 };
 
 
@@ -99,7 +99,7 @@ struct pt_symbol_cache_header
 {
 };
 
-struct __pt_os_symbol_info_header;
+struct pt_os_symbol_info_header_;
 struct pt_symbol_cache_info
 {
 	/* XXX: will be defined in the future, by now the cache just return no
@@ -108,7 +108,7 @@ struct pt_symbol_cache_info
 	struct pt_symbol_cache_header *cache;
 
 	/* defined at the os-level */
-	struct __pt_os_symbol_info_header *info;
+	struct pt_os_symbol_info_header_ *info;
 };
 
 
@@ -161,11 +161,11 @@ extern struct pt_symbol_entry *pt_resolve_symbol(const utf8_t *symbol,
 						 struct pt_module *module,
 						 int flags);
 
-extern utf8_t *__pt_os_symbol_undecorate(const utf8_t *symname);
+extern utf8_t *pt_os_symbol_undecorate_(const utf8_t *symname);
 
 inline static utf8_t *pt_symbol_undecorate(const utf8_t *symname)
 {
-	return __pt_os_symbol_undecorate(symname);
+	return pt_os_symbol_undecorate_(symname);
 }
 
 int  pt_symbol_manager_install(struct pt_process *, struct pt_symbol_op *);
@@ -210,7 +210,7 @@ inline static void pt_symbol_join(struct pt_symbol_entry **former,
 
 
 #ifdef  __cplusplus
-}
+};
 #endif
 
-#endif	/* !__LIBPTRACE_SYMBOL_H */
+#endif	/* !PT_SYMBOL_INTERNAL_H */

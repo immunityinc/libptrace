@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_THREAD_X86_64_INTERNAL_H
-#define __PT_WINDOWS_THREAD_X86_64_INTERNAL_H
+#ifndef PT_WINDOWS_THREAD_X86_64_INTERNAL_H
+#define PT_WINDOWS_THREAD_X86_64_INTERNAL_H
 
 #include "thread.h"
 #include "thread_x86_32.h" /* WoW64 */
@@ -132,4 +132,4 @@ int pt_windows_wow64_thread_single_step_remove(struct pt_thread *);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_THREAD_X86_64_INTERNAL_H */

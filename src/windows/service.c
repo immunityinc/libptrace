@@ -138,7 +138,7 @@ void service_list_destroy(struct service_list *service_list)
 	}
 }
 
-struct service_list_entry *__copy(struct service_list_entry *src)
+struct service_list_entry *copy_(struct service_list_entry *src)
 {
 	struct service_list_entry *entry;
 
@@ -180,7 +180,7 @@ int service_list_filter(struct service_list *dest,
 		if (compare(entry, cookie)) {
 			struct service_list_entry *new;
 
-			if ( (new = __copy(entry)) == NULL) {
+			if ( (new = copy_(entry)) == NULL) {
 				service_list_destroy(dest);
 				return -1;
 			}
@@ -230,7 +230,7 @@ service_list_entry_get_string(struct service_list_entry *entry,
 	return (ssize_t)strlen(dest);
 }
 
-#ifdef __TEST_SERVICE__
+#ifdef TEST_SERVICE
 int main(void)
 {
 	struct service_list_entry *entry;
@@ -250,4 +250,4 @@ int main(void)
 
 	service_list_destroy(&list);
 }
-#endif /* __TEST_SERVICE__ */
+#endif /* TEST_SERVICE */

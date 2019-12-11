@@ -50,7 +50,7 @@
 #include "process.h"
 #include "wrappers/kernel32.h"
 
-INTERVAL_TREE_DECLARE_C(mmap, struct pt_mmap_area, node, _start, _end);
+INTERVAL_TREE_DECLARE_C(mmap, struct pt_mmap_area, node, start_, end_);
 
 void pt_mmap_init(struct pt_mmap *pm)
 {
@@ -67,9 +67,9 @@ void pt_mmap_destroy(struct pt_mmap *pm)
 
 void pt_mmap_area_init(struct pt_mmap_area *area)
 {
-	area->_start = 0;
-	area->_end = 0;
-	area->flags = 0;
+	area->start_ = 0;
+	area->end_   = 0;
+	area->flags  = 0;
 	interval_tree_mmap_init_node(area);
 }
 
@@ -176,7 +176,7 @@ struct pt_mmap_area *pt_mmap_find_exact_area(struct pt_mmap *pm, unsigned long b
 	return area;
 }
 
-static int __translate_protection(DWORD protect)
+static int translate_protection_(DWORD protect)
 {
 	switch (protect) {
 	case PAGE_EXECUTE:
@@ -231,7 +231,7 @@ int pt_mmap_load(struct pt_process *process)
 		if (mbi.State == MEM_FREE)
 			continue;
 
-#ifdef __debug__
+#ifndef NDEBUG
 		printf("BaseAddress: %p\n", mbi.BaseAddress);
 		printf("AllocationBase: %p\n", mbi.AllocationBase);
 		printf("RegionSize: %u\n", mbi.RegionSize);
@@ -243,9 +243,9 @@ int pt_mmap_load(struct pt_process *process)
 			goto out_err;
 
 		/* Set up the area descriptor. */
-		area->_start = (uintptr_t)mbi.BaseAddress;
-		area->_end   = (uintptr_t)mbi.BaseAddress+mbi.RegionSize;
-		area->flags |= __translate_protection(mbi.Protect);
+		area->start_ = (uintptr_t)mbi.BaseAddress;
+		area->end_   = (uintptr_t)mbi.BaseAddress+mbi.RegionSize;
+		area->flags |= translate_protection_(mbi.Protect);
 
 		/* And add it to the process memory map. */
 		pt_mmap_add_area(&process->mmap, area);

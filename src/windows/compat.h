@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_COMPAT_H
-#define __LIBPTRACE_WINDOWS_COMPAT_H
+#ifndef PT_WINDOWS_COMPAT_INTERNAL_H
+#define PT_WINDOWS_COMPAT_INTERNAL_H
 
 #include <windows.h>
 
@@ -115,4 +115,4 @@ NtSetInformationProcess(
 NTSYSAPI ULONG NTAPI RtlNtStatusToDosError(IN NTSTATUS Status);
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_COMPAT_INTERNAL_H */

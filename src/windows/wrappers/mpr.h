@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_MPR_H
-#define __PT_WINDOWS_API_MPR_H
+#ifndef PT_WINDOWS_API_MPR_H
+#define PT_WINDOWS_API_MPR_H
 
 #include <windows.h>
 #include <libptrace/charset.h>
@@ -56,4 +56,4 @@ utf8_t *pt_windows_api_wnet_get_connection(const utf8_t *localname);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_MPR_H */

@@ -459,7 +459,7 @@ struct pe_context
 {
 	int					flags;
 	enum pe_error				error;
-	struct pt_file				*file__;
+	struct pt_file				*file_;
 	struct pe_image_file_header		img_header;
 
 	off_t					opt_header_offset;

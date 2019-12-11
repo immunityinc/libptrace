@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_PSAPI_H
-#define __PT_WINDOWS_API_PSAPI_H
+#ifndef PT_WINDOWS_API_PSAPI_H
+#define PT_WINDOWS_API_PSAPI_H
 
 #include <windows.h>
 #include <libptrace/charset.h>
@@ -59,4 +59,4 @@ utf8_t *pt_windows_api_get_mapped_filename(HANDLE hProcess, LPVOID lpv);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_PSAPI_H */

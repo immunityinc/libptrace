@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_KERNEL32_H
-#define __PT_WINDOWS_API_KERNEL32_H
+#ifndef PT_WINDOWS_API_KERNEL32_H
+#define PT_WINDOWS_API_KERNEL32_H
 
 #include <windows.h>
 #include <libptrace/charset.h>
@@ -82,4 +82,4 @@ int pt_windows_api_have_virtual_query_ex(void);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_KERNEL32_H */

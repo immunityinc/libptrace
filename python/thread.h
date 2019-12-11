@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_THREAD_H
-#define __PYTHON_PTRACE_THREAD_H
+#ifndef PYPT_THREAD_INTERNAL_H
+#define PYPT_THREAD_INTERNAL_H
 
 #include <python/Python.h>
 #include "process.h"
@@ -58,4 +58,4 @@ struct pypt_thread
 
 extern PyTypeObject pypt_thread_type;
 
-#endif
+#endif	/* !PYPT_THREAD_INTERNAL_H */

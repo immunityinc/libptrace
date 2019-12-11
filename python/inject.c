@@ -50,7 +50,7 @@
 #include "inject.h"
 #include "utils.h"
 
-int __pypt_inject_handler_pre(struct pt_process *process, void *cookie)
+static int pypt_inject_handler_pre_(struct pt_process *process, void *cookie)
 {
 	struct pypt_inject *self = (struct pypt_inject *)cookie;
 	PyGILState_STATE gstate;
@@ -73,7 +73,7 @@ int __pypt_inject_handler_pre(struct pt_process *process, void *cookie)
 	/* Call the python handler function. */
 	pyret = PyObject_CallFunctionObjArgs(
 		self->handler_pre,
-		process->__super,
+		process->super_,
 		self->cookie_pre,
 		NULL
 	);
@@ -104,7 +104,7 @@ int __pypt_inject_handler_pre(struct pt_process *process, void *cookie)
 	return ret;
 }
 
-int __pypt_inject_handler_post(struct pt_process *process, void *cookie)
+static int pypt_inject_handler_post_(struct pt_process *process, void *cookie)
 {
 	struct pypt_inject *self = (struct pypt_inject *)cookie;
 	PyGILState_STATE gstate;
@@ -127,7 +127,7 @@ int __pypt_inject_handler_post(struct pt_process *process, void *cookie)
 	/* Call the python handler function. */
 	pyret = PyObject_CallFunctionObjArgs(
 		self->handler_post,
-		process->__super,
+		process->super_,
 		self->cookie_post,
 		NULL
 	);
@@ -232,9 +232,9 @@ pypt_inject_inject(struct pypt_inject *self, PyObject *args)
 		return NULL;
 
 	/* Setup the inject structure. */
-	inject.handler_pre  = __pypt_inject_handler_pre;
+	inject.handler_pre  = pypt_inject_handler_pre_;
 	inject.cookie_pre   = self;
-	inject.handler_post = __pypt_inject_handler_post;
+	inject.handler_post = pypt_inject_handler_post_;
 	inject.cookie_post  = self;
 
 	/* Do not disappear until the callback is called. */

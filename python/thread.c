@@ -392,9 +392,9 @@ pypt_thread_suspend(struct pypt_thread *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
-#define __pypt_read_type_signed(p, t, _src, type)				\
+#define pypt_read_type_signed_(p, t, src_, type)				\
 	do {									\
-		pt_address_t src = (pt_address_t)(_src);			\
+		pt_address_t src = (pt_address_t)(src_);			\
 		Py_ssize_t size = PyTuple_GET_SIZE((t));			\
 		PyObject *pyarg;						\
 		type arg;							\
@@ -418,12 +418,12 @@ pypt_thread_suspend(struct pypt_thread *self, PyObject *args)
 			return NULL;						\
 		}								\
 										\
-		_src += sizeof(arg);						\
+		src_ += sizeof(arg);						\
 	} while (0)
 
-#define __pypt_read_type_unsigned(p, t, _src, type)				\
+#define pypt_read_type_unsigned_(p, t, src_, type)				\
 	do {									\
-		pt_address_t src = (pt_address_t)(_src);			\
+		pt_address_t src = (pt_address_t)(src_);			\
 		Py_ssize_t size = PyTuple_GET_SIZE((t));			\
 		PyObject *pyarg;						\
 		type arg;							\
@@ -447,7 +447,7 @@ pypt_thread_suspend(struct pypt_thread *self, PyObject *args)
 			return NULL;						\
 		}								\
 										\
-		_src += sizeof(arg);						\
+		src_ += sizeof(arg);						\
 	} while (0)
 
 static PyObject *
@@ -476,17 +476,17 @@ pypt_thread_sscanf(struct pypt_thread *self, PyObject *args)
 
 		switch (*p) {
 		case 'i':
-			__pypt_read_type_signed(process, ret, address, int);
+			pypt_read_type_signed_(process, ret, address, int);
 			break;
 		case 'u':
-			__pypt_read_type_unsigned(process, ret, address, unsigned int);
+			pypt_read_type_unsigned_(process, ret, address, unsigned int);
 			break;
 		case 'p':
 			/* XXX: kludge. */
 			if (self->thread->arch_data->pointer_size == 4)
-				__pypt_read_type_unsigned(process, ret, address, uint32_t);
+				pypt_read_type_unsigned_(process, ret, address, uint32_t);
 			else if (self->thread->arch_data->pointer_size == 8)
-				__pypt_read_type_unsigned(process, ret, address, uint64_t);
+				pypt_read_type_unsigned_(process, ret, address, uint64_t);
 			else
 				return NULL;
 			break;

@@ -49,19 +49,19 @@
 #define FILENAME_DEF_SIZE       256
 
 static HMODULE mpr;
-static DWORD WINAPI (*__WNetGetConnectionW)(LPCWSTR, LPWSTR, LPDWORD);
+static DWORD WINAPI (*WNetGetConnectionW_)(LPCWSTR, LPWSTR, LPDWORD);
 
-static void __attribute__((constructor)) __mpr_initialize(void)
+static void __attribute__((constructor)) mpr_initialize_(void)
 {
 	if ( (mpr = LoadLibraryW(L"mpr.dll")) == NULL)
 		return;
 
-	__WNetGetConnectionW = IMPORT(mpr, WNetGetConnectionW);
+	WNetGetConnectionW_ = IMPORT(mpr, WNetGetConnectionW);
 }
 
-static void __attribute((destructor)) __mpr_destroy(void)
+static void __attribute__((destructor)) mpr_destroy_(void)
 {
-	__WNetGetConnectionW  = NULL;
+	WNetGetConnectionW_ = NULL;
 
 	if (mpr != NULL)
 		FreeLibrary(mpr);
@@ -76,7 +76,7 @@ utf8_t *pt_windows_api_wnet_get_connection(const utf8_t *localname)
 	utf16_t *tmp;
 	DWORD ret;
 
-	if (__WNetGetConnectionW == NULL) {
+	if (WNetGetConnectionW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return NULL;
 	}
@@ -93,7 +93,7 @@ utf8_t *pt_windows_api_wnet_get_connection(const utf8_t *localname)
 		}
 
 		wremotename = tmp;
-		ret = __WNetGetConnectionW(wlocalname, wremotename, &length);
+		ret = WNetGetConnectionW_(wlocalname, wremotename, &length);
 	} while (ret == ERROR_MORE_DATA);
 
 	free(wlocalname);

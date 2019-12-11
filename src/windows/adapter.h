@@ -41,8 +41,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_ADAPTER_INTERNAL_H
-#define __PT_WINDOWS_ADAPTER_INTERNAL_H
+#ifndef PT_WINDOWS_ADAPTER_INTERNAL_H
+#define PT_WINDOWS_ADAPTER_INTERNAL_H
 
 #include "process.h"
 #include "thread.h"
@@ -58,4 +58,4 @@ extern struct pt_thread_operations  pt_windows_thread_operations;
 extern struct pt_thread_operations  pt_windows_wow64_thread_operations;
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_ADAPTER_INTERNAL_H */

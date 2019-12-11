@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_LOG_H
-#define __PYTHON_PTRACE_LOG_H
+#ifndef PYPT_LOG_INTERNAL_H
+#define PYPT_LOG_INTERNAL_H
 
 #include <python/Python.h>
 #include <libptrace/log.h>
@@ -60,4 +60,4 @@ struct pypt_log_hook
 
 extern PyTypeObject pypt_log_hook_type;
 
-#endif
+#endif	/* !PYPT_LOG_INTERNAL_H */

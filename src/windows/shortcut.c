@@ -52,14 +52,14 @@
 
 void shortcut_init(struct shortcut *shortcut)
 {
-	shortcut->pathname = NULL;
+	shortcut->pathname  = NULL;
 	shortcut->arguments = NULL;
-	shortcut->__window = NULL;
+	shortcut->window_   = NULL;
 }
 
 void shortcut_set_resolve_window(struct shortcut *shortcut, HWND window)
 {
-	shortcut->__window = window;
+	shortcut->window_ = window;
 }
 
 /* The function is now UTF-8 safe and all internal COM operations works now
@@ -117,9 +117,9 @@ int shortcut_resolve(struct shortcut *shortcut, const utf8_t *pathname)
 	/* Try to resolve the link, and let the OS interact when the
 	 * shortcut is dangling.
 	 */
-	if (shortcut->__window != NULL) {
+	if (shortcut->window_ != NULL) {
 		hresult = IShellLinkW_Resolve(shell_linkw,
-		                              shortcut->__window, 0);
+		                              shortcut->window_, 0);
 		if (FAILED(hresult)) {
 			pt_windows_error_ole_set(hresult);
 			goto out_release2;
@@ -165,7 +165,7 @@ void shortcut_destroy(struct shortcut *shortcut)
 		free(shortcut->arguments);
 }
 
-#ifdef __TEST__
+#ifdef TEST
 int main(int argc, char **argv)
 {
 	struct shortcut shortcut;
@@ -184,4 +184,4 @@ int main(int argc, char **argv)
 	shortcut_destroy(&shortcut);
 }
 
-#endif	/* __TEST__ */
+#endif	/* TEST */

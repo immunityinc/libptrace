@@ -69,7 +69,7 @@ void pt_breakpoint_hw_init(struct pt_breakpoint *bp)
 	bp->b_op = &breakpoint_hw_operations;
 }
 
-static int __translate_size(size_t size)
+static int translate_size_(size_t size)
 {
 	switch (size) {
 	case 1:
@@ -96,7 +96,7 @@ pt_breakpoint_hw_thread_set(struct pt_thread *thread,
 	           thread, bpi, bpi->address);
 
 	/* See if we have a valid hardware breakpoint size. */
-	if ( (size = __translate_size(bp->size)) == -1) {
+	if ( (size = translate_size_(bp->size)) == -1) {
 		pt_error_internal_set(PT_ERROR_INVALID_ARG);
 		pt_log("%s(): invalid breakpoint size %u\n",
 		           __FUNCTION__, bp->size);

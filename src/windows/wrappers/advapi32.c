@@ -47,26 +47,26 @@
 #include "common.h"
 
 static HMODULE advapi32;
-static BOOL WINAPI (*__LookupPrivilegeValueW)(LPCWSTR, LPCWSTR, PLUID);
-static BOOL WINAPI (*__OpenProcessToken)(HANDLE, DWORD, PHANDLE);
-static BOOL WINAPI (*__AdjustTokenPrivileges)(HANDLE, BOOL, PTOKEN_PRIVILEGES,
-                                              DWORD, PTOKEN_PRIVILEGES, PDWORD);
+static BOOL WINAPI (*LookupPrivilegeValueW_)(LPCWSTR, LPCWSTR, PLUID);
+static BOOL WINAPI (*OpenProcessToken_)(HANDLE, DWORD, PHANDLE);
+static BOOL WINAPI (*AdjustTokenPrivileges_)(HANDLE, BOOL, PTOKEN_PRIVILEGES,
+                                             DWORD, PTOKEN_PRIVILEGES, PDWORD);
 
-static void __attribute__((constructor)) __advapi32_initialize(void)
+static void __attribute__((constructor)) advapi32_initialize_(void)
 {
 	if ( (advapi32 = LoadLibraryW(L"advapi32.dll")) == NULL)
 		return;
 
-	__LookupPrivilegeValueW	= IMPORT(advapi32, LookupPrivilegeValueW);
-	__OpenProcessToken	= IMPORT(advapi32, OpenProcessToken);
-	__AdjustTokenPrivileges	= IMPORT(advapi32, AdjustTokenPrivileges);
+	LookupPrivilegeValueW_ = IMPORT(advapi32, LookupPrivilegeValueW);
+	OpenProcessToken_      = IMPORT(advapi32, OpenProcessToken);
+	AdjustTokenPrivileges_ = IMPORT(advapi32, AdjustTokenPrivileges);
 }
 
-static void __attribute((destructor)) __advapi32_destroy(void)
+static void __attribute__((destructor)) advapi32_destroy_(void)
 {
-	__LookupPrivilegeValueW	= NULL;
-	__OpenProcessToken	= NULL;
-	__AdjustTokenPrivileges	= NULL;
+	LookupPrivilegeValueW_ = NULL;
+	OpenProcessToken_      = NULL;
+	AdjustTokenPrivileges_ = NULL;
 
 	if (advapi32 != NULL)
 		FreeLibrary(advapi32);
@@ -82,12 +82,12 @@ int pt_windows_api_adjust_token_privileges(
 {
 	BOOL ret;
 
-	if (__AdjustTokenPrivileges == NULL) {
+	if (AdjustTokenPrivileges_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __AdjustTokenPrivileges(
+	ret = AdjustTokenPrivileges_(
 		TokenHandle,
 		DisableAllPrivileges,
 		NewState,
@@ -106,12 +106,12 @@ int pt_windows_api_adjust_token_privileges(
 
 int pt_windows_api_open_process_token(HANDLE h, DWORD access, PHANDLE htok)
 {
-	if (__OpenProcessToken == NULL) {
+	if (OpenProcessToken_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__OpenProcessToken(h, access, htok) == 0) {
+	if (OpenProcessToken_(h, access, htok) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -126,7 +126,7 @@ int pt_windows_api_lookup_privilege_value(const utf8_t *systemname,
 	LPWSTR name_w;
 	int ret = -1;
 
-	if (__LookupPrivilegeValueW == NULL) {
+	if (LookupPrivilegeValueW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		goto out;
         }
@@ -137,7 +137,7 @@ int pt_windows_api_lookup_privilege_value(const utf8_t *systemname,
 	if ( (name_w = pt_utf8_to_utf16(name)) == NULL)
 		goto out_systemname;
 
-	if (__LookupPrivilegeValueW(systemname_w, name_w, uid) == 0) {
+	if (LookupPrivilegeValueW_(systemname_w, name_w, uid) == 0) {
 		pt_windows_error_winapi_set();
 		goto out_name;
 	}

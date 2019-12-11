@@ -82,7 +82,7 @@
 #define DBGUI_TID(x)      (DBGUI_TID_CAST((x)->AppClientId.UniqueThread))
 #define HANDLE_VALID(h)   ((h) != NULL && (h) != INVALID_HANDLE_VALUE)
 
-extern struct pt_core __pt_core_main;
+extern struct pt_core pt_core_main_;
 
 struct pt_core_operations pt_windows_core_operations = {
         .destroy	= pt_windows_core_destroy,
@@ -93,12 +93,11 @@ struct pt_core_operations pt_windows_core_operations = {
 	.event_wait	= pt_windows_core_event_wait
 };
 
-static int pt_core_event_handle(
-	struct pt_process *process,
-        PDBGUI_WAIT_STATE_CHANGE event,
-        int *status);
 static int
-__process_handlers_init(struct pt_process *process, struct pt_event_handlers *handlers);
+pt_core_event_handle(struct pt_process *, PDBGUI_WAIT_STATE_CHANGE, int *);
+
+static int
+process_handlers_init_(struct pt_process *, struct pt_event_handlers *);
 
 int pt_windows_core_init(struct pt_core *core)
 {
@@ -193,7 +192,7 @@ struct pt_core *pt_windows_core_new(void)
 }
 
 static int
-__pt_windows_core_event_handle_debug(struct pt_core *core, HANDLE h)
+pt_windows_core_event_handle_debug_(struct pt_core *core, HANDLE h)
 {
 	LARGE_INTEGER delay = { .QuadPart = 0 };
 	DBGUI_WAIT_STATE_CHANGE event;
@@ -229,7 +228,7 @@ __pt_windows_core_event_handle_debug(struct pt_core *core, HANDLE h)
 	if (core->quit == 1)
 		pt_windows_core_process_detach(core, process);
 
-	__pt_process_detach_bottom(process);
+	pt_process_detach_bottom_(process);
 
 	pt_log("%s(): continue status is 0x%.8x\n", __FUNCTION__, status);
 	pt_log("%s(): process state: %d\n", __FUNCTION__, process->state);
@@ -240,7 +239,7 @@ __pt_windows_core_event_handle_debug(struct pt_core *core, HANDLE h)
 	/* See if we can detach.  On success, the process is gone,
 	 * so we break the loop.
 	 */
-	if (__pt_process_detach_top(core, process) == 0)
+	if (pt_process_detach_top_(core, process) == 0)
 		return 0;
 
 	if (process->state == PT_PROCESS_STATE_EXITED ||
@@ -251,7 +250,7 @@ __pt_windows_core_event_handle_debug(struct pt_core *core, HANDLE h)
 }
 
 static int
-__pt_windows_core_event_handle_queue(struct pt_core *core)
+pt_windows_core_event_handle_queue_(struct pt_core *core)
 {
 	struct pt_message_status response;
 	struct pt_message_storage msg;
@@ -327,11 +326,11 @@ int pt_windows_core_event_wait(struct pt_core *core)
 		assert(0);
 
 	case WAIT_OBJECT_0:
-		__pt_windows_core_event_handle_debug(core, handles[0]);
+		pt_windows_core_event_handle_debug_(core, handles[0]);
 		break;
 
 	case WAIT_OBJECT_0 + 1:
-		__pt_windows_core_event_handle_queue(core);
+		pt_windows_core_event_handle_queue_(core);
 		break;
 
 	default:
@@ -367,7 +366,7 @@ struct pt_process *pt_windows_core_execv(
 struct pt_process *pt_windows_core_exec(
 	struct pt_core *core,
 	const utf8_t *pathname,
-	const utf8_t *__arguments,
+	const utf8_t *arguments_,
 	struct pt_event_handlers *handlers,
 	int options)
 {
@@ -460,7 +459,7 @@ struct pt_process *pt_windows_core_exec(
 	/* According to MSDN arguments can be modified by CreateProcess.  As
 	 * this function can have the arguments string constant, we copy it.
 	 */
-	arguments = (utf8_t *)__arguments;
+	arguments = (utf8_t *)arguments_;
 	if (arguments && (arguments = strdup(arguments)) == NULL) {
 		pt_error_errno_set(errno);
 		goto out_free_dirname;
@@ -558,7 +557,7 @@ int pt_windows_core_process_kill_on_exit_set(struct pt_core *core, int value)
 }
 
 static int
-__process_handlers_init(struct pt_process *process, struct pt_event_handlers *handlers)
+process_handlers_init_(struct pt_process *process, struct pt_event_handlers *handlers)
 {
 	struct pt_event_handler *module_unload = NULL;
 	struct pt_event_handler *thread_create = NULL;
@@ -705,7 +704,7 @@ pt_windows_core_process_attach(
 		goto err_handle;
 
 	/* Initialize the handlers and options. */
-	if (__process_handlers_init(process, handlers) == -1)
+	if (process_handlers_init_(process, handlers) == -1)
 		goto err_process;
 
 	process->options = options;
@@ -777,32 +776,32 @@ int pt_windows_core_process_detach(struct pt_core *core, struct pt_process *proc
 }
 
 static inline utf8_t *
-__get_dll_nt_name_by_map(struct pt_process *process, struct pt_module *module)
+get_dll_nt_name_by_map_(struct pt_process *process, struct pt_module *module)
 {
 	HANDLE handle = pt_windows_process_handle_get(process);
 	return pt_windows_api_get_mapped_filename(handle, (void *)module->base);
 }
 
 static inline utf8_t *
-__get_dll_name_by_handle(struct pt_process *process, struct pt_module *module)
+get_dll_name_by_handle_(struct pt_process *process, struct pt_module *module)
 {
 	HANDLE handle = pt_windows_module_handle_get(module);
 	return pt_windows_api_nt_query_object_name(handle);
 }
 
 static utf8_t *
-__get_dll_name(struct pt_process *process, struct pt_module *module)
+get_dll_name_(struct pt_process *process, struct pt_module *module)
 {
 	utf8_t *name_nt, *name_dos;
 
-	name_nt = __get_dll_nt_name_by_map(process, module);
+	name_nt = get_dll_nt_name_by_map_(process, module);
 	if (name_nt == NULL) {
-		pt_log("%s(): __get_dll_nt_name_by_map() failed: %s.\n",
+		pt_log("%s(): get_dll_nt_name_by_map_() failed: %s.\n",
 			__FUNCTION__, pt_error_strerror());
 
-		name_nt = __get_dll_name_by_handle(process, module);
+		name_nt = get_dll_name_by_handle_(process, module);
 		if (name_nt == NULL) {
-			pt_log("%s(): __get_dll_name_by_handle() failed: %s.\n",
+			pt_log("%s(): get_dll_name_by_handle_() failed: %s.\n",
 				__FUNCTION__, pt_error_strerror());
 			return NULL;
 		}
@@ -821,7 +820,7 @@ __get_dll_name(struct pt_process *process, struct pt_module *module)
 	return name_dos;
 }
 
-static struct pt_thread *__thread_new(struct pt_process *process)
+static struct pt_thread *thread_new_(struct pt_process *process)
 {
 #ifdef __x86_64__
 	if (pt_windows_process_wow64_get(process))
@@ -831,7 +830,7 @@ static struct pt_thread *__thread_new(struct pt_process *process)
 	return pt_windows_thread_new();
 }
 
-static inline void __symbol_manager_install(struct pt_process *process)
+static inline void symbol_manager_install_(struct pt_process *process)
 {
 	if ( !(process->options & PT_CORE_OPTION_SYMBOL_MANAGER))
 		return;
@@ -840,7 +839,7 @@ static inline void __symbol_manager_install(struct pt_process *process)
 		pt_log("%s(): Unable to initialize symbol manager\n", __FUNCTION__);
 }
 
-static int __handle_create_process(
+static int handle_create_process_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -865,7 +864,7 @@ static int __handle_create_process(
 	 * for the initial thread in a process.  We add it to the thread
 	 * list of the process right here.
 	 */
-	if ( (thread = __thread_new(process)) == NULL)
+	if ( (thread = thread_new_(process)) == NULL)
 		goto err_handle;
 
 	/* Initialize the thread structure for this process. */
@@ -883,7 +882,7 @@ static int __handle_create_process(
 	/* Initialize the module structure for this process. */
 	pt_windows_module_handle_set(module, module_handle);
 	module->base         = (pt_address_t)module_base;
-	module->pathname     = __get_dll_name(process, module);
+	module->pathname     = get_dll_name_(process, module);
 	module->process      = process;
 
 	/* Now we have the pathname, isolate the module name. */
@@ -898,7 +897,7 @@ static int __handle_create_process(
 	pt_windows_process_handle_set(process, process_handle);
 
 	/* initialize symbol manager */
-	__symbol_manager_install(process);
+	symbol_manager_install_(process);
 
 	/* setup module symbol env */
 	if (module->pathname != NULL && process->smgr && process->smgr->sop &&
@@ -954,7 +953,7 @@ err_handle:
 	return -1;
 }
 
-static void __handle_create_thread(
+static void handle_create_thread_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -969,7 +968,7 @@ static void __handle_create_thread(
 	}
 
 	/* Allocate space for the pt_thread descriptor. */
-	if ( (thread = __thread_new(process)) == NULL)
+	if ( (thread = thread_new_(process)) == NULL)
 		goto out;
 
 	/* Initialize and link in the thread. */
@@ -987,7 +986,7 @@ out:
 	                            (struct pt_event *)&ev);
 }
 
-static void __handle_exit_process(
+static void handle_exit_process_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -1002,7 +1001,7 @@ static void __handle_exit_process(
 	                            (struct pt_event *)&ev);
 }
 
-static void __handle_exit_thread(
+static void handle_exit_thread_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -1029,7 +1028,7 @@ static void __handle_exit_thread(
 		pt_thread_delete(thread);
 }
 
-static void __handle_load_dll(
+static void handle_load_dll_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -1048,7 +1047,7 @@ static void __handle_load_dll(
 	/* Link in the module */
 	pt_windows_module_handle_set(module, h);
 	module->base     = (pt_address_t)event->StateInfo.LoadDll.BaseOfDll;
-	module->pathname = __get_dll_name(process, module);
+	module->pathname = get_dll_name_(process, module);
 
 	/* Now we have the pathname, isolate the module name. */
 	if (module->pathname != NULL) {
@@ -1088,7 +1087,7 @@ out:
 }
 
 static struct pt_module *
-__find_module(struct pt_process *process, void *base)
+find_module_(struct pt_process *process, void *base)
 {
         struct pt_module *module;
 
@@ -1101,7 +1100,7 @@ __find_module(struct pt_process *process, void *base)
         return NULL;
 }
 
-static void __handle_unload_dll(
+static void handle_unload_dll_(
 	struct pt_process *process,
 	PDBGUI_WAIT_STATE_CHANGE event)
 {
@@ -1109,7 +1108,7 @@ static void __handle_unload_dll(
 	struct pt_module *module;
 
 	/* See if the module exists in our module list. */
-	module = __find_module(process, event->StateInfo.UnloadDll.BaseAddress);
+	module = find_module_(process, event->StateInfo.UnloadDll.BaseAddress);
 	if (module == NULL) {
 		ev.error = 1;
 		pt_error_internal_set(PT_ERROR_NOT_FOUND);
@@ -1128,7 +1127,7 @@ static void __handle_unload_dll(
 		pt_module_delete(module);
 }
 
-static const char *__exception_code_to_string(DWORD code)
+static const char *exception_code_to_string_(DWORD code)
 {
 	switch(code) {
 	case EXCEPTION_ACCESS_VIOLATION:
@@ -1189,17 +1188,27 @@ static const char *__exception_code_to_string(DWORD code)
 }
 
 static inline void
-__trace_exception(struct pt_process *process, LPEXCEPTION_RECORD exception)
+trace_exception_(struct pt_process *process, LPEXCEPTION_RECORD exception)
 {
-	pt_log("%s(): EXCEPTION_DEBUG_EVENT: %s (0x%.8x)\n",
+	pt_log("%s(): EXCEPTION_DEBUG_EVENT: %s (%#08x) %#08x\n",
 	           __FUNCTION__,
-	           __exception_code_to_string(exception->ExceptionCode),
-	           exception->ExceptionCode);
+	           exception_code_to_string_(exception->ExceptionCode),
+	           exception->ExceptionCode, exception->ExceptionAddress);
+
+	switch (exception->ExceptionCode) {
+	case EXCEPTION_ACCESS_VIOLATION:
+		pt_log("    RWFlag : %d\n"
+		       "    Address: %#08x\n",
+		       exception->ExceptionInformation[0],
+		       exception->ExceptionInformation[1]
+		);
+		break;
+	}
 }
 
 static inline void
-__trace_output_debug_string_ansi(struct pt_process *process,
-                                 LPEXCEPTION_RECORD exception)
+trace_output_debug_string_ansi_(struct pt_process *process,
+                                LPEXCEPTION_RECORD exception)
 {
 	uint16_t data_length = exception->ExceptionInformation[0];
 	char data[data_length];
@@ -1225,7 +1234,7 @@ __trace_output_debug_string_ansi(struct pt_process *process,
 }
 
 static inline int
-__exception_filter(struct pt_process *process, int code, int first_chance)
+exception_filter_(struct pt_process *process, int code, int first_chance)
 {
 	/* First chance exceptions are let through. */
 	if (first_chance != 0)
@@ -1255,14 +1264,14 @@ __exception_filter(struct pt_process *process, int code, int first_chance)
  * delegate the exception.
  */
 static int
-__handle_exception(struct pt_process *process, PDBGUI_WAIT_STATE_CHANGE event)
+handle_exception_(struct pt_process *process, PDBGUI_WAIT_STATE_CHANGE event)
 {
 	LPEXCEPTION_RECORD exception = &event->StateInfo.Exception.ExceptionRecord;
 	ULONG first_chance = event->StateInfo.Exception.FirstChance;
 	int status = PT_EVENT_FORWARD;
 	struct pt_thread *thread;
 
-	__trace_exception(process, exception);
+	trace_exception_(process, exception);
 
 	/* See if we have the thread that caused the exception in our list.
 	 * If not, something weird is going on, and we just forward the
@@ -1273,7 +1282,7 @@ __handle_exception(struct pt_process *process, PDBGUI_WAIT_STATE_CHANGE event)
 		return DBG_EXCEPTION_NOT_HANDLED;
 
 	/* See if support for second chance exceptions has been requested. */
-	if (__exception_filter(process, exception->ExceptionCode, first_chance))
+	if (exception_filter_(process, exception->ExceptionCode, first_chance))
 		return DBG_EXCEPTION_NOT_HANDLED;
 
 	switch (exception->ExceptionCode) {
@@ -1353,9 +1362,9 @@ __handle_exception(struct pt_process *process, PDBGUI_WAIT_STATE_CHANGE event)
 	case STATUS_WX86_SINGLE_STEP:
 	case EXCEPTION_SINGLE_STEP:
 #if defined(__x86_64__)
-		status = __windows_x86_64_handle_exception_single_step(process, thread, exception);
+		status = windows_x86_64_handle_exception_single_step_(process, thread, exception);
 #elif defined(__i386__)
-		status = __windows_x86_32_handle_exception_single_step(process, thread, exception);
+		status = windows_x86_32_handle_exception_single_step_(process, thread, exception);
 #else
   #error "Unsupport architecture."
 #endif
@@ -1432,7 +1441,7 @@ __handle_exception(struct pt_process *process, PDBGUI_WAIT_STATE_CHANGE event)
 		break;
 
 	case DBG_PRINTEXCEPTION_C:
-		__trace_output_debug_string_ansi(process, exception);
+		trace_output_debug_string_ansi_(process, exception);
 		if (first_chance != 0)
 			status = PT_EVENT_FORWARD;
 		else
@@ -1488,19 +1497,19 @@ static int pt_core_event_handle(
 	switch (event->NewState) {
 	case DbgCreateThreadStateChange:
 		pt_log("%s: DbgCreateThreadStateChange\n", __FUNCTION__);
-		__handle_create_thread(process, event);
+		handle_create_thread_(process, event);
 		break;
 	case DbgCreateProcessStateChange:
 		pt_log("%s: DbgCreateProcessStateChange\n", __FUNCTION__);
-		__handle_create_process(process, event);
+		handle_create_process_(process, event);
 		break;
 	case DbgExitThreadStateChange:
 		pt_log("%s: DbgExitThreadStateChange\n", __FUNCTION__);
-		__handle_exit_thread(process, event);
+		handle_exit_thread_(process, event);
 		break;
 	case DbgExitProcessStateChange:
 		pt_log("%s: DbgExitProcessStateChange\n", __FUNCTION__);
-		__handle_exit_process(process, event);
+		handle_exit_process_(process, event);
 		break;
 	case DbgExceptionStateChange:
 		pt_log("%s: DbgExceptionStateChange\n", __FUNCTION__);
@@ -1510,15 +1519,15 @@ static int pt_core_event_handle(
 		if (0)
 	case DbgSingleStepStateChange:
 		pt_log("%s: DbgSingleStepStateChange\n", __FUNCTION__);
-		*status = __handle_exception(process, event);
+		*status = handle_exception_(process, event);
 		break;
 	case DbgLoadDllStateChange:
 		pt_log("%s: DbgLoadDllStateChange\n", __FUNCTION__);
-		__handle_load_dll(process, event);
+		handle_load_dll_(process, event);
 		break;
 	case DbgUnloadDllStateChange:
 		pt_log("%s: DbgUnloadDllStateChange\n", __FUNCTION__);
-		__handle_unload_dll(process, event);
+		handle_unload_dll_(process, event);
 		break;
         default:
 		pt_log("%s: Unknown debug event: %d\n", __FUNCTION__, event->NewState);
@@ -1545,9 +1554,9 @@ static int pt_core_event_handle(
 }
 
 int
-__handle_debug_single_step(struct pt_process *process,
-                           struct pt_thread *thread,
-                           LPEXCEPTION_RECORD exception)
+handle_debug_single_step_(struct pt_process *process,
+                          struct pt_thread *thread,
+                          LPEXCEPTION_RECORD exception)
 {
 	int status = PT_EVENT_FORWARD;
 

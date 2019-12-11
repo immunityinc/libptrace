@@ -69,7 +69,7 @@ static PyGetSetDef pypt_log_hook_getset[] = {
 };
 
 
-static void __pypt_log_hook_handler(void *cookie, const char *fmt, va_list va)
+static void pypt_log_hook_handler_(void *cookie, const char *fmt, va_list va)
 {
 	struct pypt_log_hook *log_hook = (struct pypt_log_hook *)cookie;
 	PyGILState_STATE gstate;
@@ -121,7 +121,7 @@ pypt_log_hook_init(struct pypt_log_hook *self, PyObject *args, PyObject *kwds)
 
 	/* Set up the libptrace callback already. */
 	/* XXX: is this safe if handler/cookie have odd destructors? */
-	self->log_hook.handler = __pypt_log_hook_handler;
+	self->log_hook.handler = pypt_log_hook_handler_;
 	self->log_hook.cookie  = self;
 
 	/* If cookie is NULL, refer it to None instead. */

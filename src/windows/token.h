@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_TOKEN_H
-#define __LIBPTRACE_WINDOWS_TOKEN_H
+#ifndef PT_WINDOWS_TOKEN_INTERNAL_H
+#define PT_WINDOWS_TOKEN_INTERNAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,4 +53,4 @@ int token_add_privilege(char *);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_TOKEN_INTERNAL_H */

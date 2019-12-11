@@ -127,7 +127,10 @@ pt_breakpoint_sw_suppress(struct pt_thread *thread,
                           struct pt_breakpoint_internal *breakpoint)
 {
 	pt_log("%s(): setting pc to: 0x%.8x\n", __FUNCTION__, breakpoint->address);
-	assert(pt_thread_register_pc_set(thread, breakpoint->address) != -1);
+
+	if (pt_thread_register_pc_set(thread, breakpoint->address) == -1)
+		return -1;
+
 	pt_process_write(thread->process, breakpoint->address, &breakpoint->original, 1);
 
 	return 0;

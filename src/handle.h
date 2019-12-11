@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_HANDLE_INTERNAL_H
-#define __PT_HANDLE_INTERNAL_H
+#ifndef PT_HANDLE_INTERNAL_H
+#define PT_HANDLE_INTERNAL_H
 
 #include <libptrace/core.h>
 #include <libptrace/handle.h>
@@ -67,4 +67,4 @@ struct pt_process *pt_handle_process_find(struct pt_core *, pt_handle_t);
 };
 #endif
 
-#endif
+#endif	/* !PT_HANDLE_INTERNAL_H */

@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_THREAD_X86_32_INTERNAL_H
-#define __PT_THREAD_X86_32_INTERNAL_H
+#ifndef PT_THREAD_X86_32_INTERNAL_H
+#define PT_THREAD_X86_32_INTERNAL_H
 
 #include "thread_x86.h"
 
@@ -152,4 +152,4 @@ int pt_thread_x86_32_set_dr7(struct pt_thread *, uint32_t);
 };
 #endif
 
-#endif
+#endif	/* !PT_THREAD_X86_32_INTERNAL_H */

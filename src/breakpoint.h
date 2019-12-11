@@ -61,7 +61,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif	/* __cplusplus */
+#endif
 
 struct pt_breakpoint;
 typedef void (*pt_breakpoint_handler_t)(struct pt_thread *, void *cookie);
@@ -116,10 +116,10 @@ int pt_breakpoint_set(struct pt_process *process,
                       struct pt_breakpoint *breakpoint);
 int pt_breakpoint_remove(struct pt_process *process, struct pt_breakpoint *breakpoint);
 
-int _breakpoint_avl_compare(struct avl_node *, struct avl_node *);
+int breakpoint_avl_compare_(struct avl_node *, struct avl_node *);
 
 #ifdef __cplusplus
 };
-#endif	/* __cplusplus */
+#endif
 
-#endif	/* !__PT_BREAKPOINT_INTERNAL_H */
+#endif	/* !PT_BREAKPOINT_INTERNAL_H */

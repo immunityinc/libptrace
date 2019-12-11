@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_THREAD_X86_64_H
-#define __LIBPTRACE_THREAD_X86_64_H
+#ifndef PT_THREAD_X86_64_INTERNAL_H
+#define PT_THREAD_X86_64_INTERNAL_H
 
 #include <stdint.h>
 #include <libptrace/thread.h>
@@ -113,6 +113,10 @@ struct pt_thread_x86_64_operations
 	int (*set_dr7)(struct pt_thread *, uint64_t);
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* x86_64 register read functions */
 uint64_t pt_thread_x86_64_get_rax(struct pt_thread *);
 uint64_t pt_thread_x86_64_get_rbx(struct pt_thread *);
@@ -171,4 +175,8 @@ int pt_thread_x86_64_set_dr3(struct pt_thread *, uint64_t);
 int pt_thread_x86_64_set_dr6(struct pt_thread *, uint64_t);
 int pt_thread_x86_64_set_dr7(struct pt_thread *, uint64_t);
 
+#ifdef __cplusplus
+};
 #endif
+
+#endif	/* !PT_THREAD_X86_64_INTERNAL_H */

@@ -62,7 +62,7 @@ int pt_module_init(struct pt_module *module)
 	module->base           = PT_ADDRESS_NULL;
 	module->process        = NULL;
 	module->private_data   = NULL;
-	module->__super        = NULL;
+	module->super_         = NULL;
         module->s_cache        = s_cache;
 	module->s_cache->cache = NULL; /* cache: XXX not implemented yet */
 	module->s_cache->info  = NULL; /* low level OS module info cache */

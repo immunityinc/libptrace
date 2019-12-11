@@ -48,56 +48,56 @@
 #include "dbghelp.h"
 
 static HMODULE dbghelp;
-static BOOL    WINAPI (*__SymInitializeW)(HANDLE, PCWSTR, BOOL);
-static DWORD   WINAPI (*__SymSetOptions)(DWORD);
-static BOOL    WINAPI (*__SymSetSearchPathW)(HANDLE, PCWSTR);
-static BOOL    WINAPI (*__SymUnloadModule64)(HANDLE, DWORD64);
-static BOOL    WINAPI (*__SymCleanup)(HANDLE);
-static DWORD   WINAPI (*__UnDecorateSymbolNameW)(PCWSTR, PWSTR, DWORD, DWORD);
-static DWORD64 WINAPI (*__SymLoadModuleExW)(HANDLE, HANDLE, PCWSTR, PCWSTR,
-                                            DWORD64, DWORD, PMODLOAD_DATA,
-                                            DWORD);
-static BOOL    WINAPI (*__SymUnloadModule64)(HANDLE, DWORD64);
-static BOOL    WINAPI (*__SymGetModuleInfoW64)(HANDLE, DWORD64, PIMAGEHLP_MODULEW64);
-static BOOL    WINAPI (*__SymEnumSymbolsW)(HANDLE, ULONG64, PCWSTR,
-                                           PSYM_ENUMERATESYMBOLS_CALLBACKW,
-                                           const PVOID);
+static BOOL    WINAPI (*SymInitializeW_)(HANDLE, PCWSTR, BOOL);
+static DWORD   WINAPI (*SymSetOptions_)(DWORD);
+static BOOL    WINAPI (*SymSetSearchPathW_)(HANDLE, PCWSTR);
+static BOOL    WINAPI (*SymUnloadModule64_)(HANDLE, DWORD64);
+static BOOL    WINAPI (*SymCleanup_)(HANDLE);
+static DWORD   WINAPI (*UnDecorateSymbolNameW_)(PCWSTR, PWSTR, DWORD, DWORD);
+static DWORD64 WINAPI (*SymLoadModuleExW_)(HANDLE, HANDLE, PCWSTR, PCWSTR,
+                                           DWORD64, DWORD, PMODLOAD_DATA,
+                                           DWORD);
+static BOOL    WINAPI (*SymUnloadModule64_)(HANDLE, DWORD64);
+static BOOL    WINAPI (*SymGetModuleInfoW64_)(HANDLE, DWORD64, PIMAGEHLP_MODULEW64);
+static BOOL    WINAPI (*SymEnumSymbolsW_)(HANDLE, ULONG64, PCWSTR,
+                                          PSYM_ENUMERATESYMBOLS_CALLBACKW,
+                                          const PVOID);
 
-static void __attribute__((constructor)) __dbghelp_initialize(void)
+static void __attribute__((constructor)) dbghelp_initialize_(void)
 {
 	if ( (dbghelp = LoadLibraryW(L"dbghelp.dll")) == NULL)
 		return;
 
-	__SymInitializeW	= IMPORT(dbghelp, SymInitializeW);
-	__SymSetOptions		= IMPORT(dbghelp, SymSetOptions);
-	__SymSetSearchPathW     = IMPORT(dbghelp, SymSetSearchPathW);
-	__SymUnloadModule64     = IMPORT(dbghelp, SymUnloadModule64);
-	__SymCleanup            = IMPORT(dbghelp, SymCleanup);
-	__UnDecorateSymbolNameW = IMPORT(dbghelp, UnDecorateSymbolNameW);
-	__SymLoadModuleExW      = IMPORT(dbghelp, SymLoadModuleExW);
-	__SymUnloadModule64	= IMPORT(dbghelp, SymUnloadModule64);
-	__SymGetModuleInfoW64	= IMPORT(dbghelp, SymGetModuleInfoW64);
-	__SymEnumSymbolsW       = IMPORT(dbghelp, SymEnumSymbolsW);
+	SymInitializeW_        = IMPORT(dbghelp, SymInitializeW);
+	SymSetOptions_         = IMPORT(dbghelp, SymSetOptions);
+	SymSetSearchPathW_     = IMPORT(dbghelp, SymSetSearchPathW);
+	SymUnloadModule64_     = IMPORT(dbghelp, SymUnloadModule64);
+	SymCleanup_            = IMPORT(dbghelp, SymCleanup);
+	UnDecorateSymbolNameW_ = IMPORT(dbghelp, UnDecorateSymbolNameW);
+	SymLoadModuleExW_      = IMPORT(dbghelp, SymLoadModuleExW);
+	SymUnloadModule64_     = IMPORT(dbghelp, SymUnloadModule64);
+	SymGetModuleInfoW64_   = IMPORT(dbghelp, SymGetModuleInfoW64);
+	SymEnumSymbolsW_       = IMPORT(dbghelp, SymEnumSymbolsW);
 }
 
-static void __attribute((destructor)) __dbghelp_destroy(void)
+static void __attribute__((destructor)) dbghelp_destroy_(void)
 {
-	__SymInitializeW	= NULL;
-	__SymSetOptions		= NULL;
-	__SymSetSearchPathW     = NULL;
-	__SymUnloadModule64     = NULL;
-	__SymCleanup            = NULL;
-	__UnDecorateSymbolNameW = NULL;
-	__SymLoadModuleExW      = NULL;
-	__SymUnloadModule64     = NULL;
-	__SymGetModuleInfoW64	= NULL;
-	__SymEnumSymbolsW       = NULL;
+	SymInitializeW_        = NULL;
+	SymSetOptions_         = NULL;
+	SymSetSearchPathW_     = NULL;
+	SymUnloadModule64_     = NULL;
+	SymCleanup_            = NULL;
+	UnDecorateSymbolNameW_ = NULL;
+	SymLoadModuleExW_      = NULL;
+	SymUnloadModule64_     = NULL;
+	SymGetModuleInfoW64_   = NULL;
+	SymEnumSymbolsW_       = NULL;
 
 	if (dbghelp != NULL)
 		FreeLibrary(dbghelp);
 }
 
-static BOOL CALLBACK __sym_enum_symbols_adapter(
+static BOOL CALLBACK sym_enum_symbols_adapter_(
 	PSYMBOL_INFOW	pSymInfo,
 	ULONG		SymbolSize,
 	PVOID		UserContext)
@@ -136,7 +136,7 @@ int pt_windows_api_sym_enum_symbols(
 	LPWSTR MaskW = NULL;
 	BOOL ret;
 
-	if (__SymEnumSymbolsW == NULL) {
+	if (SymEnumSymbolsW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
@@ -144,11 +144,11 @@ int pt_windows_api_sym_enum_symbols(
 	if (Mask != NULL && (MaskW = pt_utf8_to_utf16(Mask)) == NULL)
 		return -1;
 
-	ret = __SymEnumSymbolsW(
+	ret = SymEnumSymbolsW_(
 		hProcess,
 		BaseOfDll,
 		MaskW,
-		__sym_enum_symbols_adapter,
+		sym_enum_symbols_adapter_,
 		NewContext
 	);
 
@@ -190,13 +190,13 @@ int pt_windows_api_sym_get_module_info64(
 	IMAGEHLP_MODULEW64 modinfo;
 	utf8_t *cvdata;
 
-	if (__SymGetModuleInfoW64 == NULL) {
+	if (SymGetModuleInfoW64_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		goto err;
 	}
 
 	modinfo.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
-	if (__SymGetModuleInfoW64(hProcess, dwAddr, &modinfo) == FALSE) {
+	if (SymGetModuleInfoW64_(hProcess, dwAddr, &modinfo) == FALSE) {
 		pt_windows_error_winapi_set();
 		goto err;
 	}
@@ -256,12 +256,12 @@ err:
 
 int pt_windows_api_sym_uynload_module64(HANDLE hProcess, DWORD64 BaseOfDll)
 {
-	if (__SymUnloadModule64 == NULL) {
+	if (SymUnloadModule64_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__SymUnloadModule64(hProcess, BaseOfDll) == FALSE) {
+	if (SymUnloadModule64_(hProcess, BaseOfDll) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -282,7 +282,7 @@ DWORD64 pt_windows_api_sym_load_module_ex(
 	LPWSTR ImageNameW, ModuleNameW;
 	DWORD64 ret;
 
-	if (__SymLoadModuleExW == NULL) {
+	if (SymLoadModuleExW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return 0;
 	}
@@ -295,7 +295,7 @@ DWORD64 pt_windows_api_sym_load_module_ex(
 		return 0;
 	}
 
-	ret = __SymLoadModuleExW(hProcess, hFile, ImageNameW, ModuleNameW,
+	ret = SymLoadModuleExW_(hProcess, hFile, ImageNameW, ModuleNameW,
 	                         BaseOfDll, DllSize, Data, Flags);
 	if (ret == 0)
 		pt_windows_error_winapi_set();
@@ -312,7 +312,7 @@ pt_windows_api_sym_initialize(HANDLE h, const utf8_t *search_path, BOOL invade)
 	LPWSTR search_pathw = NULL;
 	BOOL ret;
 
-	if (__SymInitializeW == NULL) {
+	if (SymInitializeW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
@@ -322,7 +322,7 @@ pt_windows_api_sym_initialize(HANDLE h, const utf8_t *search_path, BOOL invade)
 			return -1;
 	}
 
-	ret = __SymInitializeW(h, search_pathw, invade);
+	ret = SymInitializeW_(h, search_pathw, invade);
 
 	if (search_pathw != NULL)
 		free(search_pathw);
@@ -339,12 +339,12 @@ int pt_windows_api_sym_set_options(DWORD options, DWORD *old)
 {
 	DWORD ret;
 
-	if (__SymSetOptions == NULL) {
+	if (SymSetOptions_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	ret = __SymSetOptions(options);
+	ret = SymSetOptions_(options);
 	if (old != NULL)
 		*old = ret;
 
@@ -358,7 +358,7 @@ utf8_t *pt_windows_api_undecorate_symbol_name(const utf8_t *name, DWORD flags)
 	DWORD count;
 	size_t len;
 
-	if (__UnDecorateSymbolNameW == NULL) {
+	if (UnDecorateSymbolNameW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		goto out;
 	}
@@ -376,7 +376,7 @@ utf8_t *pt_windows_api_undecorate_symbol_name(const utf8_t *name, DWORD flags)
 		goto out_wname;
 	}
 
-	count = __UnDecorateSymbolNameW(wname, wuname, len, flags);
+	count = UnDecorateSymbolNameW_(wname, wuname, len, flags);
 	if (count == 0) {
 		pt_windows_error_winapi_set();
 		goto out_wuname;
@@ -394,12 +394,12 @@ out:
 
 int pt_windows_api_sym_cleanup(HANDLE h)
 {
-	if (__SymCleanup == NULL) {
+	if (SymCleanup_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__SymCleanup(h) == FALSE) {
+	if (SymCleanup_(h) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -409,12 +409,12 @@ int pt_windows_api_sym_cleanup(HANDLE h)
 
 int pt_windows_api_sym_unload_module64(HANDLE h, DWORD64 base)
 {
-	if (__SymUnloadModule64 == NULL) {
+	if (SymUnloadModule64_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
 
-	if (__SymUnloadModule64(h, base) == FALSE) {
+	if (SymUnloadModule64_(h, base) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -426,7 +426,7 @@ int pt_windows_api_sym_set_search_path(HANDLE h, const utf8_t *path)
 {
 	PCWSTR wpath;
 
-	if (__SymSetSearchPathW == NULL) {
+	if (SymSetSearchPathW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return -1;
 	}
@@ -434,7 +434,7 @@ int pt_windows_api_sym_set_search_path(HANDLE h, const utf8_t *path)
 	if ( (wpath = pt_utf8_to_utf16(path)) == NULL)
                 return -1;
 
-	if (__SymSetSearchPathW(h, wpath) == FALSE) {
+	if (SymSetSearchPathW_(h, wpath) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}

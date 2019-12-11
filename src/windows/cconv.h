@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_X86_CCONV_H
-#define __LIBPTRACE_X86_CCONV_H
+#ifndef PT_WINDOWS_CCONV_INTERNAL_H
+#define PT_WINDOWS_CCONV_INTERNAL_H
 
 #include <libptrace/types.h>
 #include <libptrace/thread.h>
@@ -61,4 +61,4 @@ pt_register_t pt_cconv_function_retval_get(struct pt_thread *thread);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_CCONV_INTERNAL_H */

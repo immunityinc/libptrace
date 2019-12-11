@@ -58,7 +58,7 @@ first_byte_mark[] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
  *
  * A return value of (size_t)-1 shall be used to indicate an error.
  */
-static size_t __utf16_to_utf8_len(const utf16_t *string)
+static size_t utf16_to_utf8_len_(const utf16_t *string)
 {
 	const uint16_t *src;
 	uint16_t w1, w2;
@@ -97,7 +97,7 @@ static size_t __utf16_to_utf8_len(const utf16_t *string)
 
 int utf16_valid(const utf16_t *string)
 {
-	return __utf16_to_utf8_len(string) != (size_t)-1;
+	return utf16_to_utf8_len_(string) != (size_t)-1;
 }
 
 utf8_t *pt_utf16_to_utf8(const utf16_t *string)
@@ -110,7 +110,7 @@ utf8_t *pt_utf16_to_utf8(const utf16_t *string)
 	int type;
 
 	/* First pass: determine the length of the utf8 string to allocate. */
-	if ( (size = __utf16_to_utf8_len(string)) == (size_t)-1) {
+	if ( (size = utf16_to_utf8_len_(string)) == (size_t)-1) {
 		pt_error_internal_set(PT_ERROR_BAD_ENCODING);
 		return NULL;
 	}

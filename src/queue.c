@@ -91,7 +91,7 @@ int pt_queue_destroy(struct pt_queue *queue)
 	return 0;
 }
 
-static inline int __pred_queue_full(void *arg)
+static inline int pred_queue_full_(void *arg)
 {
 	struct pt_queue *queue = (struct pt_queue *)arg;
 	return queue->tail == queue->head + queue->size;
@@ -115,7 +115,7 @@ static int pt_queue_push(struct pt_queue *queue, void *value)
 		}
 
 		/* Wait until we have space again. */
-		pt_condvar_wait(&queue->cond_full, &queue->mutex, __pred_queue_full, queue);
+		pt_condvar_wait(&queue->cond_full, &queue->mutex, pred_queue_full_, queue);
 	}
 
 	queue->data[queue->tail++ % queue->size] = value;
@@ -131,7 +131,7 @@ static int pt_queue_push(struct pt_queue *queue, void *value)
 	return 0;
 }
 
-static inline int __pred_queue_empty(void *arg)
+static inline int pred_queue_empty_(void *arg)
 {
 	struct pt_queue *queue = (struct pt_queue *)arg;
 	return queue->head == queue->tail;
@@ -153,7 +153,7 @@ static void *pt_queue_pop(struct pt_queue *queue)
 			return NULL;
 		}
 
-		pt_condvar_wait(&queue->cond_empty, &queue->mutex, __pred_queue_empty, queue);
+		pt_condvar_wait(&queue->cond_empty, &queue->mutex, pred_queue_empty_, queue);
 	}
 
 	ret = queue->data[queue->head++ % queue->size];

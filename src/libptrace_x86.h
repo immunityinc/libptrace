@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_X86_H
-#define __LIBPTRACE_X86_H
+#ifndef PT_X86_INTERNAL_H
+#define PT_X86_INTERNAL_H
 
 #include <stdint.h>
 
@@ -278,11 +278,8 @@ int ptrace_call_function(struct ptrace_context *p,
 int ptrace_call_procedure(struct ptrace_context *p, void *code);
 int ptrace_call_nowait(struct ptrace_context *p, void *code);
 
-int __ptrace_run_code(struct ptrace_context *p, void *code,
-                      size_t len, struct ptrace_registers *result);
-
 #ifdef __cplusplus
-}
-#endif /* __cplusplus */
+};
+#endif
 
-#endif	/* !__LIBPTRACE_X86_H */
+#endif	/* !PT_X86_INTERNAL_H */

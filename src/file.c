@@ -63,9 +63,9 @@ pt_file_process_close(struct pt_file *file)
 }
 
 static ssize_t
-pt_file_process_read(struct pt_file *__file, void *dst, size_t size)
+pt_file_process_read(struct pt_file *file_, void *dst, size_t size)
 {
-	struct pt_file_process *file = (struct pt_file_process *)__file;
+	struct pt_file_process *file = (struct pt_file_process *)file_;
 	ssize_t ret;
 
 	assert(file->type == PT_FILE_PROCESS_TYPE);
@@ -86,9 +86,9 @@ pt_file_process_write( )
 }
 
 static off_t
-pt_file_process_seek(struct pt_file *__file, off_t off, int whence)
+pt_file_process_seek(struct pt_file *file_, off_t off, int whence)
 {
-	struct pt_file_process *file = (struct pt_file_process *)__file;
+	struct pt_file_process *file = (struct pt_file_process *)file_;
 	off_t old_pos;
 
 	assert(file->type == PT_FILE_PROCESS_TYPE);
@@ -121,9 +121,9 @@ pt_file_process_seek(struct pt_file *__file, off_t off, int whence)
 }
 
 static off_t
-pt_file_process_tell(struct pt_file *__file)
+pt_file_process_tell(struct pt_file *file_)
 {
-	struct pt_file_process *file = (struct pt_file_process *)__file;
+	struct pt_file_process *file = (struct pt_file_process *)file_;
 
 	assert(file->type == PT_FILE_PROCESS_TYPE);
 
@@ -140,9 +140,9 @@ const struct pt_file_operations pt_file_process_operations = {
 };
 
 static int
-pt_file_c_open(struct pt_file *__file, int flags)
+pt_file_c_open(struct pt_file *file_, int flags)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 	char *mode;
 
 	assert(file->type == PT_FILE_C_TYPE);
@@ -168,9 +168,9 @@ pt_file_c_open(struct pt_file *__file, int flags)
 }
 
 static int
-pt_file_c_close(struct pt_file *__file)
+pt_file_c_close(struct pt_file *file_)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 
 	assert(file->type == PT_FILE_C_TYPE);
 	fclose(file->fp);
@@ -179,9 +179,9 @@ pt_file_c_close(struct pt_file *__file)
 }
 
 static ssize_t
-pt_file_c_read(struct pt_file *__file, void *dst, size_t size)
+pt_file_c_read(struct pt_file *file_, void *dst, size_t size)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 	size_t ret;
 
 	assert(file->type == PT_FILE_C_TYPE);
@@ -197,9 +197,9 @@ pt_file_c_read(struct pt_file *__file, void *dst, size_t size)
 }
 
 static ssize_t
-pt_file_c_write(struct pt_file *__file, const void *src, size_t size)
+pt_file_c_write(struct pt_file *file_, const void *src, size_t size)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 	size_t ret;
 
 	assert(file->type == PT_FILE_C_TYPE);
@@ -215,9 +215,9 @@ pt_file_c_write(struct pt_file *__file, const void *src, size_t size)
 }
 
 static off_t
-pt_file_c_seek(struct pt_file *__file, off_t off, int whence)
+pt_file_c_seek(struct pt_file *file_, off_t off, int whence)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 	off_t current;
 
 	assert(file->type == PT_FILE_C_TYPE);
@@ -232,9 +232,9 @@ pt_file_c_seek(struct pt_file *__file, off_t off, int whence)
 }
 
 static off_t
-pt_file_c_tell(struct pt_file *__file)
+pt_file_c_tell(struct pt_file *file_)
 {
-	struct pt_file_c *file = (struct pt_file_c *)__file;
+	struct pt_file_c *file = (struct pt_file_c *)file_;
 	off_t ret;
 
 	assert(file->type == PT_FILE_C_TYPE);
@@ -263,12 +263,12 @@ const struct pt_file_operations pt_file_c_operations = {
 
 
 /* the following functions are defined in the respective OS modules */
-extern int     pt_file_native_open(struct pt_file *__file, int flags);
-extern int     pt_file_native_close(struct pt_file *__file);
-extern ssize_t pt_file_native_read(struct pt_file *__file, void *dst, size_t size);
-extern ssize_t pt_file_native_write(struct pt_file *__file, const void *src, size_t size);
-extern off_t   pt_file_native_tell(struct pt_file *__file);
-extern off_t   pt_file_native_seek(struct pt_file *__file, off_t off, int whence);
+extern int     pt_file_native_open(struct pt_file *file_, int flags);
+extern int     pt_file_native_close(struct pt_file *file_);
+extern ssize_t pt_file_native_read(struct pt_file *file_, void *dst, size_t size);
+extern ssize_t pt_file_native_write(struct pt_file *file_, const void *src, size_t size);
+extern off_t   pt_file_native_tell(struct pt_file *file_);
+extern off_t   pt_file_native_seek(struct pt_file *file_, off_t off, int whence);
 
 
 const struct pt_file_operations pt_file_native_operations = {
@@ -296,9 +296,9 @@ pt_file_buffer_close(struct pt_file *file)
 }
 
 static ssize_t
-pt_file_buffer_read(struct pt_file *__file, void *dst, size_t size)
+pt_file_buffer_read(struct pt_file *file_, void *dst, size_t size)
 {
-	struct pt_file_buffer *file = (struct pt_file_buffer *)__file;
+	struct pt_file_buffer *file = (struct pt_file_buffer *)file_;
 
 	assert(file->type == PT_FILE_BUFFER_TYPE);
 
@@ -318,9 +318,9 @@ pt_file_buffer_write( )
 }
 
 static off_t
-pt_file_buffer_seek(struct pt_file *__file, off_t off, int whence)
+pt_file_buffer_seek(struct pt_file *file_, off_t off, int whence)
 {
-	struct pt_file_buffer *file = (struct pt_file_buffer *)__file;
+	struct pt_file_buffer *file = (struct pt_file_buffer *)file_;
 	unsigned char *new_pos;
 	off_t old_pos;
 
@@ -366,9 +366,9 @@ pt_file_buffer_seek(struct pt_file *__file, off_t off, int whence)
 }
 
 static off_t
-pt_file_buffer_tell(struct pt_file *__file)
+pt_file_buffer_tell(struct pt_file *file_)
 {
-	struct pt_file_buffer *file = (struct pt_file_buffer *)__file;
+	struct pt_file_buffer *file = (struct pt_file_buffer *)file_;
 
 	assert(file->type == PT_FILE_BUFFER_TYPE);
 

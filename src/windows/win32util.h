@@ -41,8 +41,8 @@
  * Author: Massimiliano Oldani <max@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_WIN32UTIL_H
-#define __LIBPTRACE_WINDOWS_WIN32UTIL_H
+#ifndef PT_WINDOWS_WIN32UTIL_INTERNAL_H
+#define PT_WINDOWS_WIN32UTIL_INTERNAL_H
 
 #include <windows.h>
 
@@ -60,4 +60,4 @@ int MultiByteToWideCharDyn(UINT, DWORD, LPCSTR, int, LPWSTR *);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_WIN32UTIL_INTERNAL_H */

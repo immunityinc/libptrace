@@ -80,10 +80,10 @@ struct pt_process *pt_windows_wow64_process_new(void)
 }
 
 static int
-__handle_debug_register(struct pt_process *process,
-                        struct pt_thread *thread,
-                        LPEXCEPTION_RECORD exception,
-			int index)
+handle_debug_register_(struct pt_process *process,
+                       struct pt_thread *thread,
+                       LPEXCEPTION_RECORD exception,
+                       int index)
 {
 	struct pt_event_breakpoint ev;
 	struct x86_debug_register *reg;
@@ -114,7 +114,7 @@ __handle_debug_register(struct pt_process *process,
 
 
 
-static uint64_t __handle_debug_registers(
+static uint64_t handle_debug_registers_(
 	struct pt_process *process,
 	struct pt_thread *thread,
 	LPEXCEPTION_RECORD exception,
@@ -123,14 +123,14 @@ static uint64_t __handle_debug_registers(
 	int status;
 
 	if (dr6 & X86_DR6_B0) {
-		status = __handle_debug_register(process, thread, exception, 0);
+		status = handle_debug_register_(process, thread, exception, 0);
 
 		if (status == PT_EVENT_DROP)
 			dr6 &= ~X86_DR6_B0;
 	}
 
 	if (dr6 & X86_DR6_B1) {
-		status = __handle_debug_register(process, thread, exception, 1);
+		status = handle_debug_register_(process, thread, exception, 1);
 
 		if (status == PT_EVENT_DROP)
 			dr6 &= ~X86_DR6_B1;
@@ -138,14 +138,14 @@ static uint64_t __handle_debug_registers(
 
 
 	if (dr6 & X86_DR6_B2) {
-		status = __handle_debug_register(process, thread, exception, 2);
+		status = handle_debug_register_(process, thread, exception, 2);
 
 		if (status == PT_EVENT_DROP)
 			dr6 &= ~X86_DR6_B2;
 	}
 
 	if (dr6 & X86_DR6_B3) {
-		status = __handle_debug_register(process, thread, exception, 3);
+		status = handle_debug_register_(process, thread, exception, 3);
 
 		if (status == PT_EVENT_DROP)
 			dr6 &= ~X86_DR6_B3;
@@ -154,7 +154,7 @@ static uint64_t __handle_debug_registers(
 	return dr6;
 }
 
-int __windows_x86_64_handle_exception_single_step(
+int windows_x86_64_handle_exception_single_step_(
 	struct pt_process *process,
 	struct pt_thread *thread,
 	LPEXCEPTION_RECORD exception)
@@ -175,7 +175,7 @@ int __windows_x86_64_handle_exception_single_step(
 	 */
 	if (pt_error_is_set()) {
 		pt_log("%s(): pt_thread_x86_64_get_dr6() failed.\n", __FUNCTION__);
-		return __handle_debug_single_step(process, thread, exception);
+		return handle_debug_single_step_(process, thread, exception);
 	}
 
 	if (pt_windows_process_wow64_get(process))
@@ -190,7 +190,7 @@ int __windows_x86_64_handle_exception_single_step(
 	 * with debug registers.  *sigh*
 	 */
 	if (dr6 & X86_DR6_BS || dr6 == 0) {
-		int ret = __handle_debug_single_step(process, thread, exception);
+		int ret = handle_debug_single_step_(process, thread, exception);
 
 		if (ret == PT_EVENT_DROP)
 			dr6 &= ~X86_DR6_BS;
@@ -200,7 +200,7 @@ int __windows_x86_64_handle_exception_single_step(
 	dr6 &= X86_DR6_MASK;
 
 	/* Handle debug registers that have set. */
-	dr6 = __handle_debug_registers(process, thread, exception, dr6);
+	dr6 = handle_debug_registers_(process, thread, exception, dr6);
 
 	/* Write back dr6.  If it is not 0 at this time, this means we
 	 * have been requested to PT_EVENT_FORWARD one of the

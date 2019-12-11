@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_NETSTAT_H
-#define __LIBPTRACE_WINDOWS_NETSTAT_H
+#ifndef PT_WINDOWS_NETSTAT_INTERNAL_H
+#define PT_WINDOWS_NETSTAT_INTERNAL_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -116,4 +116,4 @@ int netstat_udp_filter(struct udp_table *,
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_NETSTAT_INTERNAL_H */

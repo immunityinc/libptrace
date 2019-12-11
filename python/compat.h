@@ -40,20 +40,20 @@
  * Author: Ronald Huizer <ronald@hexpedition.com>
  *
  */
-#ifndef __PYTHON_PTRACE_COMPAT_H
-#define __PYTHON_PTRACE_COMPAT_H
+#ifndef PYPT_COMPAT_INTERNAL_H
+#define PYPT_COMPAT_INTERNAL_H
 
 #include <python/Python.h>
 
 #if PY_MAJOR_VERSION >= 3
-  #define _MODULE_INIT_FUNC_NAME(name) PyInit_##name
+  #define MODULE_INIT_FUNC_NAME_(name) PyInit_##name
   #define MODULE_INIT_FUNC_RETURN(x)  return (x)
 #else
-  #define _MODULE_INIT_FUNC_NAME(name) init##name
+  #define MODULE_INIT_FUNC_NAME_(name) init##name
   #define MODULE_INIT_FUNC_RETURN(x)  return
 #endif
 
-#define MODULE_INIT_FUNC_NAME(name) _MODULE_INIT_FUNC_NAME(name)
+#define MODULE_INIT_FUNC_NAME(name) MODULE_INIT_FUNC_NAME_(name)
 
 #if PY_MAJOR_VERSION >= 3
   #define PyInt_FromLong      PyLong_FromLong
@@ -80,4 +80,4 @@ char *             py_string_to_utf8(PyObject *o);
 };
 #endif
 
-#endif	/* !__PYTHON_PTRACE_COMPAT_H */
+#endif	/* !PYPT_COMPAT_INTERNAL_H */

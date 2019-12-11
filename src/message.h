@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_MESSAGE_INTERNAL_H
-#define __PT_MESSAGE_INTERNAL_H
+#ifndef PT_MESSAGE_INTERNAL_H
+#define PT_MESSAGE_INTERNAL_H
 
 #include <libptrace/event.h>
 #include <libptrace/types.h>
@@ -114,4 +114,4 @@ struct pt_message_storage
 	};
 };
 
-#endif
+#endif	/* !PT_MESSAGE_INTERNAL_H */

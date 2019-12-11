@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_SERVICE_H
-#define __LIBPTRACE_WINDOWS_SERVICE_H
+#ifndef PT_WINDOWS_SERVICE_INTERNAL_H
+#define PT_WINDOWS_SERVICE_INTERNAL_H
 
 #include <limits.h>
 #include <libptrace/list.h>
@@ -84,4 +84,4 @@ service_list_entry_get_string(struct service_list_entry *, char *, size_t);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_SERVICE_INTERNAL_H */

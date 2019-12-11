@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_FACTORY_INTERNAL_H
-#define __PT_FACTORY_INTERNAL_H
+#ifndef PT_FACTORY_INTERNAL_H
+#define PT_FACTORY_INTERNAL_H
 
 #include <libptrace/factory.h>
 
@@ -62,4 +62,4 @@ struct pt_thread  *pt_factory_thread_new(int type);
 };
 #endif
 
-#endif
+#endif	/* !PT_FACTORY_INTERNAL_H */

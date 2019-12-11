@@ -63,30 +63,30 @@ _Static_assert(sizeof(struct pt_iterator_breakpoint) <= sizeof(struct pt_iterato
 struct pt_iterator
 pt_iterator_thread_begin(struct pt_process *process)
 {
-	struct pt_iterator _it;
-	struct pt_iterator_thread *it = (struct pt_iterator_thread *)&_it;
+	struct pt_iterator it_;
+	struct pt_iterator_thread *it = (struct pt_iterator_thread *)&it_;
 
 	it->an      = avl_tree_min(&process->threads);
 	it->an_next = avl_tree_next_safe(it->an);
 
-	return _it;
+	return it_;
 }
 
-int pt_iterator_thread_end(struct pt_iterator *_it)
+int pt_iterator_thread_end(struct pt_iterator *it_)
 {
-	struct pt_iterator_thread *it = (struct pt_iterator_thread *)_it;
+	struct pt_iterator_thread *it = (struct pt_iterator_thread *)it_;
 	return it->an == NULL;
 }
 
-struct pt_thread *pt_iterator_thread_get(struct pt_iterator *_it)
+struct pt_thread *pt_iterator_thread_get(struct pt_iterator *it_)
 {
-	struct pt_iterator_thread *it = (struct pt_iterator_thread *)_it;
+	struct pt_iterator_thread *it = (struct pt_iterator_thread *)it_;
 	return container_of(it->an, struct pt_thread, avl_node);
 }
 
-void pt_iterator_thread_next(struct pt_iterator *_it)
+void pt_iterator_thread_next(struct pt_iterator *it_)
 {
-	struct pt_iterator_thread *it = (struct pt_iterator_thread *)_it;
+	struct pt_iterator_thread *it = (struct pt_iterator_thread *)it_;
 
 	it->an      = it->an_next;
 	it->an_next = avl_tree_next_safe(it->an);
@@ -94,31 +94,31 @@ void pt_iterator_thread_next(struct pt_iterator *_it)
 
 struct pt_iterator pt_iterator_module_begin(struct pt_process *process)
 {
-	struct pt_iterator _it = {0, };
-	struct pt_iterator_module *it = (struct pt_iterator_module *)&_it;
+	struct pt_iterator it_ = {0, };
+	struct pt_iterator_module *it = (struct pt_iterator_module *)&it_;
 
 	it->process = process;
 	it->lh      = it->process->modules.next;
 	it->lh_next = it->lh->next;
 
-	return _it;
+	return it_;
 }
 
-int pt_iterator_module_end(struct pt_iterator *_it)
+int pt_iterator_module_end(struct pt_iterator *it_)
 {
-	struct pt_iterator_module *it = (struct pt_iterator_module *)_it;
+	struct pt_iterator_module *it = (struct pt_iterator_module *)it_;
 	return it->lh == &it->process->modules;
 }
 
-struct pt_module *pt_iterator_module_get(struct pt_iterator *_it)
+struct pt_module *pt_iterator_module_get(struct pt_iterator *it_)
 {
-	struct pt_iterator_module *it = (struct pt_iterator_module *)_it;
+	struct pt_iterator_module *it = (struct pt_iterator_module *)it_;
 	return list_entry(it->lh, struct pt_module, process_entry);
 }
 
-void pt_iterator_module_next(struct pt_iterator *_it)
+void pt_iterator_module_next(struct pt_iterator *it_)
 {
-	struct pt_iterator_module *it = (struct pt_iterator_module *)_it;
+	struct pt_iterator_module *it = (struct pt_iterator_module *)it_;
 
 	it->lh      = it->lh_next;
 	it->lh_next = it->lh->next;
@@ -127,42 +127,42 @@ void pt_iterator_module_next(struct pt_iterator *_it)
 struct pt_iterator
 pt_iterator_breakpoint_begin_process(struct pt_process *process)
 {
-	struct pt_iterator _it;
-	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&_it;
+	struct pt_iterator it_;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&it_;
 
 	it->an      = avl_tree_min(&process->breakpoints);
 	it->an_next = avl_tree_next_safe(it->an);
 
-	return _it;
+	return it_;
 }
 
 struct pt_iterator
 pt_iterator_breakpoint_begin_thread(struct pt_thread *thread)
 {
-	struct pt_iterator _it;
-	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&_it;
+	struct pt_iterator it_;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)&it_;
 
 	it->an      = avl_tree_min(&thread->breakpoints);
 	it->an_next = avl_tree_next_safe(it->an);
 
-	return _it;
+	return it_;
 }
 
-int pt_iterator_breakpoint_end(struct pt_iterator *_it)
+int pt_iterator_breakpoint_end(struct pt_iterator *it_)
 {
-	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)_it;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)it_;
 	return it->an == NULL;
 }
 
-struct pt_breakpoint *pt_iterator_breakpoint_get(struct pt_iterator *_it)
+struct pt_breakpoint *pt_iterator_breakpoint_get(struct pt_iterator *it_)
 {
-	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)_it;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)it_;
 	return container_of(it->an, struct pt_breakpoint_internal, avl_node)->breakpoint;
 }
 
-void pt_iterator_breakpoint_next(struct pt_iterator *_it)
+void pt_iterator_breakpoint_next(struct pt_iterator *it_)
 {
-	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)_it;
+	struct pt_iterator_breakpoint *it = (struct pt_iterator_breakpoint *)it_;
 
 	it->an      = it->an_next;
 	it->an_next = avl_tree_next_safe(it->an);
@@ -171,30 +171,30 @@ void pt_iterator_breakpoint_next(struct pt_iterator *_it)
 struct pt_iterator
 pt_iterator_process_begin(struct pt_core *core)
 {
-	struct pt_iterator _it;
-	struct pt_iterator_process *it = (struct pt_iterator_process *)&_it;
+	struct pt_iterator it_;
+	struct pt_iterator_process *it = (struct pt_iterator_process *)&it_;
 
 	it->an      = avl_tree_min(&core->process_tree);
 	it->an_next = avl_tree_next_safe(it->an);
 
-	return _it;
+	return it_;
 }
 
-int pt_iterator_process_end(struct pt_iterator *_it)
+int pt_iterator_process_end(struct pt_iterator *it_)
 {
-	struct pt_iterator_process *it = (struct pt_iterator_process *)_it;
+	struct pt_iterator_process *it = (struct pt_iterator_process *)it_;
 	return it->an == NULL;
 }
 
-struct pt_process *pt_iterator_process_get(struct pt_iterator *_it)
+struct pt_process *pt_iterator_process_get(struct pt_iterator *it_)
 {
-	struct pt_iterator_process *it = (struct pt_iterator_process *)_it;
+	struct pt_iterator_process *it = (struct pt_iterator_process *)it_;
 	return container_of(it->an, struct pt_process, avl_node);
 }
 
-void pt_iterator_process_next(struct pt_iterator *_it)
+void pt_iterator_process_next(struct pt_iterator *it_)
 {
-	struct pt_iterator_process *it = (struct pt_iterator_process *)_it;
+	struct pt_iterator_process *it = (struct pt_iterator_process *)it_;
 
 	it->an      = it->an_next;
 	it->an_next = avl_tree_next_safe(it->an);

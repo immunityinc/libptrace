@@ -52,28 +52,28 @@
 #define MODLIST_DEF_SIZE	256
 
 static HMODULE psapi;
-static BOOL  WINAPI (*__EnumProcesses)(DWORD *, DWORD, DWORD *);
-static BOOL  WINAPI (*__EnumProcessModules)(HANDLE, HMODULE *, DWORD, LPDWORD);
-static DWORD WINAPI (*__GetModuleFileNameExW)(HANDLE, HMODULE, LPWSTR, DWORD);
-static DWORD WINAPI (*__GetMappedFileNameW)(HANDLE, LPVOID, LPWSTR, DWORD);
+static BOOL  WINAPI (*EnumProcesses_)(DWORD *, DWORD, DWORD *);
+static BOOL  WINAPI (*EnumProcessModules_)(HANDLE, HMODULE *, DWORD, LPDWORD);
+static DWORD WINAPI (*GetModuleFileNameExW_)(HANDLE, HMODULE, LPWSTR, DWORD);
+static DWORD WINAPI (*GetMappedFileNameW_)(HANDLE, LPVOID, LPWSTR, DWORD);
 
-static void __attribute__((constructor)) __psapi_initialize(void)
+static void __attribute__((constructor)) psapi_initialize_(void)
 {
 	if ( (psapi = LoadLibraryW(L"psapi.dll")) == NULL)
 		return;
 
-	__EnumProcesses        = IMPORT(psapi, EnumProcesses);
-	__EnumProcessModules   = IMPORT(psapi, EnumProcessModules);
-	__GetModuleFileNameExW = IMPORT(psapi, GetModuleFileNameExW);
-	__GetMappedFileNameW   = IMPORT(psapi, GetMappedFileNameW);
+	EnumProcesses_        = IMPORT(psapi, EnumProcesses);
+	EnumProcessModules_   = IMPORT(psapi, EnumProcessModules);
+	GetModuleFileNameExW_ = IMPORT(psapi, GetModuleFileNameExW);
+	GetMappedFileNameW_   = IMPORT(psapi, GetMappedFileNameW);
 }
 
-static void __attribute((destructor)) __psapi_destroy(void)
+static void __attribute__((destructor)) psapi_destroy_(void)
 {
-	__EnumProcesses        = NULL;
-	__EnumProcessModules   = NULL;
-	__GetModuleFileNameExW = NULL;
-	__GetMappedFileNameW   = NULL;
+	EnumProcesses_        = NULL;
+	EnumProcessModules_   = NULL;
+	GetModuleFileNameExW_ = NULL;
+	GetMappedFileNameW_   = NULL;
 
 	if (psapi != NULL)
 		FreeLibrary(psapi);
@@ -100,7 +100,7 @@ pt_windows_api_enum_processes(DWORD **ppProcessIds, DWORD *pBytesReturned)
 	DWORD *ret;
 	BOOL b;
 
-	if (__EnumProcesses == NULL) {
+	if (EnumProcesses_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return FALSE;
 	}
@@ -117,7 +117,7 @@ pt_windows_api_enum_processes(DWORD **ppProcessIds, DWORD *pBytesReturned)
 		}
 		proclist = newptr;
 
-		b = __EnumProcesses(
+		b = EnumProcesses_(
 			proclist,
 			size * sizeof(DWORD),
 			&BytesReturned
@@ -167,7 +167,7 @@ pt_windows_api_enum_process_modules(HANDLE hProcess, HMODULE **lpphModule,
 	DWORD cbNeeded;
 	BOOL b;
 
-	if (__EnumProcessModules == NULL) {
+	if (EnumProcessModules_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return FALSE;
 	}
@@ -184,7 +184,7 @@ pt_windows_api_enum_process_modules(HANDLE hProcess, HMODULE **lpphModule,
 		}
 		modlist = newptr;
 
-		b = __EnumProcessModules(
+		b = EnumProcessModules_(
 			hProcess,
 			modlist,
 			size * sizeof(HMODULE),
@@ -216,7 +216,7 @@ utf8_t *pt_windows_api_get_module_filename_ex(HANDLE hProcess, HMODULE hModule)
 	DWORD retsize;
 	utf8_t *ret;
 
-	if (__GetModuleFileNameExW == NULL) {
+	if (GetModuleFileNameExW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return NULL;
 	}
@@ -239,8 +239,8 @@ utf8_t *pt_windows_api_get_module_filename_ex(HANDLE hProcess, HMODULE hModule)
 		 * If truncation happens, the return value is the length of
 		 * the string in lpImageFileName including the 0-byte.
 		 */
-		retsize = __GetModuleFileNameExW(hProcess, hModule,
-		                                 lpImageFileName, size);
+		retsize = GetModuleFileNameExW_(hProcess, hModule,
+		                                lpImageFileName, size);
 		if (!retsize) {
 			pt_windows_error_winapi_set();
 			free(lpImageFileName);
@@ -263,7 +263,7 @@ utf8_t *pt_windows_api_get_mapped_filename(HANDLE hProcess, LPVOID lpv)
 	DWORD retsize;
 	utf8_t *ret;
 
-	if (__GetMappedFileNameW == NULL) {
+	if (GetMappedFileNameW_ == NULL) {
 		pt_error_internal_set(PT_ERROR_UNSUPPORTED);
 		return NULL;
 	}
@@ -286,8 +286,8 @@ utf8_t *pt_windows_api_get_mapped_filename(HANDLE hProcess, LPVOID lpv)
 		 * If truncation happens, the return value is the length of
 		 * the string in lpMappedFileName including the 0-byte.
 		 */
-		retsize = __GetMappedFileNameW(hProcess, lpv,
-		                               lpMappedFileName, size);
+		retsize = GetMappedFileNameW_(hProcess, lpv,
+		                              lpMappedFileName, size);
 		if (!retsize) {
 			pt_windows_error_winapi_set();
 			free(lpMappedFileName);

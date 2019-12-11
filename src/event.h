@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_EVENT_INTERNAL_H
-#define __PT_EVENT_INTERNAL_H
+#ifndef PT_EVENT_INTERNAL_H
+#define PT_EVENT_INTERNAL_H
 
 #include <libptrace/event.h>
 #include <libptrace/list.h>
@@ -103,5 +103,4 @@ void pt_event_handler_destroy(struct pt_event_handler *handler);
 };
 #endif
 
-#endif
-
+#endif	/* !PT_EVENT_INTERNAL_H */

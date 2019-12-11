@@ -41,8 +41,8 @@
  * Author: Roderick Asselineau <roderick@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_MMAP_H
-#define __LIBPTRACE_MMAP_H
+#ifndef PT_MMAP_INTERNAL_H
+#define PT_MMAP_INTERNAL_H
 
 #include <stdint.h>
 #include "interval_tree.h"
@@ -55,22 +55,26 @@ struct pt_process;
 
 struct pt_mmap_area
 {
-	uintptr_t  _start;
-	uintptr_t  _end;
+	uintptr_t  start_;
+	uintptr_t  end_;
 	int        flags;
 
 	struct interval_tree_node node;
 };
 
-INTERVAL_TREE_DECLARE_H(mmap, struct pt_mmap_area, node, _start, _end);
+INTERVAL_TREE_DECLARE_H(mmap, struct pt_mmap_area, node, start_, end_);
 
 struct pt_mmap
 {
 	struct interval_tree t;
 };
 
-#define pt_mmap_for_each_area(_p, _t) \
-        for(_t = interval_tree_mmap_start(&((_p)->t)); _t; _t = interval_tree_mmap_next())
+#define pt_mmap_for_each_area(p_, t_) \
+        for (t_ = interval_tree_mmap_start(&((p_)->t)); t_; t_ = interval_tree_mmap_next())
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct pt_mmap *pt_mmap_new(void);
 void pt_mmap_init(struct pt_mmap *);
@@ -97,4 +101,8 @@ int pt_mmap_flags_supported(struct pt_process *);
 
 int pt_mmap_load(struct pt_process *);
 
+#ifdef __cplusplus
+};
 #endif
+
+#endif	/* !PT_MMAP_INTERNAL_H */

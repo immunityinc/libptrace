@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_EVENT_H
-#define __PYTHON_PTRACE_EVENT_H
+#ifndef PYPT_EVENT_INTERNAL_H
+#define PYPT_EVENT_INTERNAL_H
 
 struct pypt_event_handlers
 {
@@ -81,4 +81,4 @@ int pypt_handle_divide_by_zero(struct pt_event_divide_by_zero *ev);
 int pypt_handle_priv_instruction(struct pt_event_priv_instruction *ev);
 int pypt_handle_unknown_exception(struct pt_event_unknown_exception *ev);
 
-#endif
+#endif	/* !PYPT_EVENT_INTERNAL_H */

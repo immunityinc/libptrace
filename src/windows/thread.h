@@ -42,8 +42,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_THREAD_H
-#define __LIBPTRACE_WINDOWS_THREAD_H
+#ifndef PT_WINDOWS_THREAD_INTERNAL_H
+#define PT_WINDOWS_THREAD_INTERNAL_H
 
 #include "../thread.h"
 
@@ -92,4 +92,4 @@ int   pt_windows_thread_register_pc_set(struct pt_thread *, void *);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_THREAD_INTERNAL_H */

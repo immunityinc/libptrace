@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYPT_INJECT
-#define __PYPT_INJECT
+#ifndef PYPT_INJECT_INTERNAL_H
+#define PYPT_INJECT_INTERNAL_H
 
 #include <python/Python.h>
 #include "ptrace.h"
@@ -61,4 +61,4 @@ struct pypt_inject
 
 extern PyTypeObject pypt_inject_type;
 
-#endif
+#endif	/* !PYPT_INJECT_INTERNAL_H */

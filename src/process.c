@@ -53,7 +53,7 @@
 #include "module.h"
 #include "thread.h"
 
-int _thread_avl_compare(struct avl_node *_a, struct avl_node *_b);
+int thread_avl_compare_(struct avl_node *a, struct avl_node *b_);
 
 /** Initializes the process using the native interface for this build. */
 int pt_process_init(struct pt_process *process)
@@ -70,10 +70,11 @@ int pt_process_init(struct pt_process *process)
 	process->core               = NULL;
 	process->smgr               = NULL;
 	process->remote_break_addr  = PT_ADDRESS_NULL;
+	process->super_             = NULL;
 
-	INIT_AVL_TREE(&process->threads, _thread_avl_compare);
+	INIT_AVL_TREE(&process->threads, thread_avl_compare_);
 	list_init(&process->modules);
-	INIT_AVL_TREE(&process->breakpoints, _breakpoint_avl_compare);
+	INIT_AVL_TREE(&process->breakpoints, breakpoint_avl_compare_);
 	pt_mmap_init(&process->mmap);
 	pt_event_handlers_internal_init(&process->handlers);
 
@@ -304,7 +305,7 @@ pt_process_read_string(struct pt_process *pctx, const pt_address_t src)
 }
 
 static utf16_t *
-__pt_process_read_string_utf16(struct pt_process *pctx, const pt_address_t src)
+pt_process_read_string_utf16_(struct pt_process *pctx, const pt_address_t src)
 {
 	utf16_t *utf16;
 	size_t i;
@@ -328,7 +329,7 @@ __pt_process_read_string_utf16(struct pt_process *pctx, const pt_address_t src)
 utf8_t *
 pt_process_read_string_utf16(struct pt_process *pctx, const pt_address_t src)
 {
-	utf16_t *utf16_s = __pt_process_read_string_utf16(pctx, src);
+	utf16_t *utf16_s = pt_process_read_string_utf16_(pctx, src);
 	utf8_t *utf8_s;
 
 	if (utf16_s == NULL)

@@ -48,7 +48,8 @@
 #include "netstat.h"
 #include "service.h"
 #include "wrappers/psapi.h"
-#ifdef __TEST_PS__
+
+#ifdef TEST_PS
 #include <libptrace/windows/token.h>
 #endif
 
@@ -72,7 +73,7 @@ utf8_t *ps_process_pathname_get(DWORD pid)
 }
 
 /* this is kept as char* since will work both on ANSI and UTF-8 */
-static char *__basename(char *pathname)
+static char *basename_(char *pathname)
 {
 	char *p, *end, *retval;
 	size_t i;
@@ -100,7 +101,7 @@ static char *__basename(char *pathname)
 	return retval;
 }
 
-static int __tcp_cmp(struct tcp_table_entry *entry, void *cookie)
+static int tcp_cmp_(struct tcp_table_entry *entry, void *cookie)
 {
 	DWORD pid = (DWORD)(uintptr_t)cookie;
 
@@ -108,14 +109,14 @@ static int __tcp_cmp(struct tcp_table_entry *entry, void *cookie)
 	       entry->pid == pid;
 }
 
-static int __udp_cmp(struct udp_table_entry *entry, void *cookie)
+static int udp_cmp_(struct udp_table_entry *entry, void *cookie)
 {
 	DWORD pid = (DWORD)(uintptr_t)cookie;
 
 	return entry->pid == pid;
 }
 
-static int __service_cmp(struct service_list_entry *entry, void *cookie)
+static int service_cmp_(struct service_list_entry *entry, void *cookie)
 {
 	DWORD pid = (DWORD)(uintptr_t)cookie;
 
@@ -197,18 +198,18 @@ int process_list_get(struct process_list *list)
 		if (handles[i] != NULL) {
 			list->data[i].pathname =
 				ps_process_pathname_get(processes[i]);
-			list->data[i].name = __basename(list->data[i].pathname);
+			list->data[i].name = basename_(list->data[i].pathname);
 
 			netstat_tcp_filter(&list->data[i].tcp_table,
-				&tcp_table, __tcp_cmp,
+				&tcp_table, tcp_cmp_,
 			        (void *)(uintptr_t)processes[i]);
 
 			netstat_udp_filter(&list->data[i].udp_table,
-				&udp_table, __udp_cmp,
+				&udp_table, udp_cmp_,
 			        (void *)(uintptr_t)processes[i]);
 
 			service_list_filter(&list->data[i].service_list,
-				&services, __service_cmp,
+				&services, service_cmp_,
 				(void *)(uintptr_t)processes[i]);
 
 			CloseHandle(handles[i]);
@@ -246,7 +247,7 @@ void process_list_entry_destroy(struct process_list_entry *entry)
 	service_list_destroy(&entry->service_list);
 }
 
-#ifdef __TEST_PS__
+#ifdef TEST_PS
 int main(void)
 {
 	struct tcp_table_entry *tcp_entry;
@@ -293,4 +294,4 @@ int main(void)
 
 	process_list_destroy(&pl);
 }
-#endif /* __TEST_PS__ */
+#endif /* TEST_PS */

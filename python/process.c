@@ -500,7 +500,7 @@ static PyGetSetDef pypt_process_getset[] = {
 	{ NULL }
 };
 
-static char *__process_state[] = {
+static char *process_state_[] = {
 	[PT_PROCESS_STATE_INIT]          = "PT_PROCESS_STATE_INIT",
 	[PT_PROCESS_STATE_CREATED]       = "PT_PROCESS_STATE_CREATED",
 	[PT_PROCESS_STATE_ATTACHED]      = "PT_PROCESS_STATE_ATTACHED",
@@ -515,7 +515,7 @@ static PyObject *pypt_process__repr__(struct pypt_process *self)
 	return PyString_FromFormat("<%s(%p) pid:%d %s>",
 				   Py_TYPE(self)->tp_name, self,
 				   pt_process_pid_get(self->process),
-				   __process_state[self->process->state]);
+				   process_state_[self->process->state]);
 }
 
 PyTypeObject pypt_process_type = {

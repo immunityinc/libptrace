@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <rhuizer@hexpedition.com>, <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_CORE_INTERNAL_H
-#define __PT_WINDOWS_CORE_INTERNAL_H
+#ifndef PT_WINDOWS_CORE_INTERNAL_H
+#define PT_WINDOWS_CORE_INTERNAL_H
 
 #include <windows.h>
 #include "../core.h"
@@ -97,12 +97,12 @@ int pt_windows_core_process_detach(struct pt_core *, struct pt_process *);
 struct pt_process *pt_windows_core_exec(struct pt_core *, const utf8_t *, const utf8_t *, struct pt_event_handlers *, int);
 struct pt_process *pt_windows_core_execv(struct pt_core *, const utf8_t *, utf8_t *const [], struct pt_event_handlers *, int);
 
-int  __handle_debug_single_step(struct pt_process *process,
-                                struct pt_thread *thread,
-                                LPEXCEPTION_RECORD exception);
+int  handle_debug_single_step_(struct pt_process *process,
+                               struct pt_thread *thread,
+                               LPEXCEPTION_RECORD exception);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_CORE_INTERNAL_H */

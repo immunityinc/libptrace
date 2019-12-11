@@ -50,7 +50,7 @@
 
 #define PT_FILE_NATIVE(x) ((struct pt_file_native*)(x))
 
-static inline int __flags_to_desired_access(int flags)
+static inline int flags_to_desired_access_(int flags)
 {
 	switch(flags) {
 	case PT_FILE_RDONLY:
@@ -64,7 +64,7 @@ static inline int __flags_to_desired_access(int flags)
 	return -1;
 }
 
-static inline int __flags_to_share_mode(int flags)
+static inline int flags_to_share_mode_(int flags)
 {
 	switch (flags) {
 	case PT_FILE_RDONLY:
@@ -90,13 +90,13 @@ int pt_file_native_open(struct pt_file *file, int flags)
 
 	file_native = (struct pt_file_native *)file;
 
-	if ( (desired_access = __flags_to_desired_access(flags)) == -1)
+	if ( (desired_access = flags_to_desired_access_(flags)) == -1)
 		return -1;
 
 	if ( (filename_w = pt_utf8_to_utf16(file_native->filename)) == NULL)
 		return -1;
 
-	share_mode = __flags_to_share_mode(flags);
+	share_mode = flags_to_share_mode_(flags);
 
 	h = CreateFileW(
 		filename_w,
@@ -140,17 +140,17 @@ int pt_file_native_close(struct pt_file *file)
 	return 0;
 }
 
-ssize_t pt_file_native_read(struct pt_file *__file, void *dst, size_t size)
+ssize_t pt_file_native_read(struct pt_file *file_, void *dst, size_t size)
 {
 	DWORD bytes_read = 0;
 	DWORD bytes_to_read = size;
-	struct pt_file_native* __file_native = PT_FILE_NATIVE(__file);
-	assert(__file && __file->type == PT_FILE_NATIVE_TYPE);
+	struct pt_file_native* file_native_ = PT_FILE_NATIVE(file_);
+	assert(file_ && file_->type == PT_FILE_NATIVE_TYPE);
 
-	if (__file_native->fd.handle == 0 || __file_native->fd.handle == INVALID_HANDLE_VALUE)
+	if (file_native_->fd.handle == 0 || file_native_->fd.handle == INVALID_HANDLE_VALUE)
 		return -1;
 
-	if (ReadFile(__file_native->fd.handle, dst, bytes_to_read, &bytes_read, NULL) == FALSE) {
+	if (ReadFile(file_native_->fd.handle, dst, bytes_to_read, &bytes_read, NULL) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -160,16 +160,16 @@ ssize_t pt_file_native_read(struct pt_file *__file, void *dst, size_t size)
 
 
 
-ssize_t pt_file_native_write(struct pt_file *__file, const void *src, size_t size)
+ssize_t pt_file_native_write(struct pt_file *file_, const void *src, size_t size)
 {
 	DWORD bytes_to_write = size, bytes_written = 0;
-	struct pt_file_native* __file_native = PT_FILE_NATIVE(__file);
+	struct pt_file_native *file_native_ = PT_FILE_NATIVE(file_);
 
-	assert(__file->type == PT_FILE_NATIVE_TYPE);
-	if (__file_native->fd.handle == 0 || __file_native->fd.handle == INVALID_HANDLE_VALUE)
+	assert(file_->type == PT_FILE_NATIVE_TYPE);
+	if (file_native_->fd.handle == 0 || file_native_->fd.handle == INVALID_HANDLE_VALUE)
 		return -1;
 
-	if (WriteFile(__file_native->fd.handle, src, bytes_to_write, &bytes_written, NULL) == FALSE) {
+	if (WriteFile(file_native_->fd.handle, src, bytes_to_write, &bytes_written, NULL) == FALSE) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -200,18 +200,18 @@ static int convert_native_whence(int whence)
 
 
 
-off_t pt_file_native_seek(struct pt_file *__file, off_t off, int whence)
+off_t pt_file_native_seek(struct pt_file *file_, off_t off, int whence)
 {
 	LARGE_INTEGER li;
 	li.QuadPart = off;
 	int local_whence;
 	off_t current;
 
-	struct pt_file_native* __file_native = PT_FILE_NATIVE(__file);
+	struct pt_file_native* file_native_ = PT_FILE_NATIVE(file_);
 
-	assert(__file && __file->type == PT_FILE_NATIVE_TYPE);
+	assert(file_ && file_->type == PT_FILE_NATIVE_TYPE);
 
-	current = __file->file_ops->tell(__file);
+	current = file_->file_ops->tell(file_);
 	if (current == -1)
 		return -1;
 
@@ -219,7 +219,7 @@ off_t pt_file_native_seek(struct pt_file *__file, off_t off, int whence)
 	if (local_whence == -1)
 		return -1;
 
-	if (SetFilePointerEx(__file_native->fd.handle, li, NULL, local_whence) == 0) {
+	if (SetFilePointerEx(file_native_->fd.handle, li, NULL, local_whence) == 0) {
 		pt_windows_error_winapi_set();
 		return -1;
 	}
@@ -230,16 +230,16 @@ off_t pt_file_native_seek(struct pt_file *__file, off_t off, int whence)
 
 
 
-off_t   pt_file_native_tell(struct pt_file *__file)
+off_t   pt_file_native_tell(struct pt_file *file_)
 {
 	off_t ret = 0;
 	LARGE_INTEGER li, out;
 	li.QuadPart = 0;
 	out.QuadPart = 0;
 
-	assert(__file && __file->type == PT_FILE_NATIVE_TYPE);
-	struct pt_file_native* __file_native = PT_FILE_NATIVE(__file);
-	if (SetFilePointerEx(__file_native->fd.handle, li, &out, FILE_CURRENT) == FALSE)
+	assert(file_ && file_->type == PT_FILE_NATIVE_TYPE);
+	struct pt_file_native *file_native_ = PT_FILE_NATIVE(file_);
+	if (SetFilePointerEx(file_native_->fd.handle, li, &out, FILE_CURRENT) == FALSE)
 	{
 		pt_windows_error_winapi_set();
 		return -1;

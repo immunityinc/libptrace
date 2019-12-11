@@ -48,7 +48,7 @@
 #include "netstat.h"
 #include "wrappers/iphlpapi.h"
 
-int __translate_state(DWORD state)
+static int translate_state_(DWORD state)
 {
 	if (state == MIB_TCP_STATE_LISTEN)
 		return TCP_STATE_LISTENING;
@@ -109,7 +109,7 @@ int netstat_tcp_table_get(struct tcp_table *table)
 			return -1;
 		}
 
-		entry->state = __translate_state(tcp_table->table[i].dwState);
+		entry->state = translate_state_(tcp_table->table[i].dwState);
 		entry->local_addr = tcp_table->table[i].dwLocalAddr;
 		entry->local_port = htons(tcp_table->table[i].dwLocalPort);
 		entry->remote_addr = tcp_table->table[i].dwRemoteAddr;
@@ -198,7 +198,7 @@ void netstat_udp_table_destroy(struct udp_table *table)
 	}
 }
 
-struct tcp_table_entry *__tcopy(struct tcp_table_entry *entry)
+static struct tcp_table_entry *tcopy_(struct tcp_table_entry *entry)
 {
 	struct tcp_table_entry *new;
 
@@ -210,7 +210,7 @@ struct tcp_table_entry *__tcopy(struct tcp_table_entry *entry)
 	return memcpy(new, entry, sizeof(*new));
 }
 
-struct udp_table_entry *__ucopy(struct udp_table_entry *entry)
+static struct udp_table_entry *ucopy_(struct udp_table_entry *entry)
 {
 	struct udp_table_entry *new;
 
@@ -237,7 +237,7 @@ int netstat_tcp_filter(struct tcp_table *tcp_out,
 		if (compare(entry, cookie)) {
 			struct tcp_table_entry *new;
 
-			if ( (new = __tcopy(entry)) == NULL) {
+			if ( (new = tcopy_(entry)) == NULL) {
 				netstat_tcp_table_destroy(tcp_out);
 				return -1;
 			}
@@ -264,7 +264,7 @@ int netstat_udp_filter(struct udp_table *udp_out,
 		if (compare(entry, cookie)) {
 			struct udp_table_entry *new;
 
-			if ( (new = __ucopy(entry)) == NULL) {
+			if ( (new = ucopy_(entry)) == NULL) {
 				netstat_udp_table_destroy(udp_out);
 				return -1;
 			}

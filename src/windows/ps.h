@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_PS_INTERNAL_H
-#define __PT_WINDOWS_PS_INTERNAL_H
+#ifndef PT_WINDOWS_PS_INTERNAL_H
+#define PT_WINDOWS_PS_INTERNAL_H
 
 #include "netstat.h"
 #include "service.h"
@@ -68,7 +68,7 @@ extern "C" {
 
 void process_list_init(struct process_list *);
 void process_list_entry_init(struct process_list_entry *);
-int process_list_get(struct process_list *);
+int  process_list_get(struct process_list *);
 void process_list_destroy(struct process_list *);
 void process_list_entry_destroy(struct process_list_entry *);
 
@@ -76,4 +76,4 @@ void process_list_entry_destroy(struct process_list_entry *);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_PS_INTERNAL_H */

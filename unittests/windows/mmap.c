@@ -43,36 +43,37 @@
 #include <inttypes.h>
 #include <libptrace/libptrace.h>
 
-void printf_node(void *_n)
+void printf_node(void *n_)
 {
-        struct pt_mmap_area *n = (struct pt_mmap_area *)_n;
+        struct pt_mmap_area *n = (struct pt_mmap_area *)n_;
         struct avl_node *p;
-        struct interval_tree_node *_p;
-        struct pt_mmap_area *__p;
+        struct interval_tree_node *p_;
+        struct pt_mmap_area *p__;
         
-        if(!_n)
+        if (!n_)
                 return;
                 
         printf("NODE [0x%.8x,0x%.8x]\n", n->_start, n->_end, &n->node.avl_node);
-        if(n->node.avl_node.parent) {
-                p = n->node.avl_node.parent;
-                _p = container_of(p, struct interval_tree_node, avl_node);
-                __p = container_of(_p, struct pt_mmap_area, node);
-                printf("\t-> parent [0x%.8x,0x%.8x]\n", __p->_start, __p->_end);
+
+        if (n->node.avl_node.parent) {
+                p   = n->node.avl_node.parent;
+                p_  = container_of(p, struct interval_tree_node, avl_node);
+                p__ = container_of(p_, struct pt_mmap_area, node);
+                printf("\t-> parent [0x%.8x,0x%.8x]\n", p__->_start, p__->_end);
         }
 
         if(n->node.avl_node.left) {
-                p = n->node.avl_node.left;
-                _p = container_of(p, struct interval_tree_node, avl_node);
-                __p = container_of(_p, struct pt_mmap_area, node);
-                printf("\t-> left [0x%.8x,0x%.8x]\n", __p->_start, __p->_end);
+                p   = n->node.avl_node.left;
+                p_  = container_of(p, struct interval_tree_node, avl_node);
+                p__ = container_of(p_, struct pt_mmap_area, node);
+                printf("\t-> left [0x%.8x,0x%.8x]\n", p__->_start, p__->_end);
         }
 
-        if(n->node.avl_node.right) {
-                p = n->node.avl_node.right;
-                _p = container_of(p, struct interval_tree_node, avl_node);
-                __p = container_of(_p, struct pt_mmap_area, node);
-                printf("\t-> right [0x%.8x,0x%.8x]\n", __p->_start, __p->_end);
+        if (n->node.avl_node.right) {
+                p   = n->node.avl_node.right;
+                p_  = container_of(p, struct interval_tree_node, avl_node);
+                p__ = container_of(p_, struct pt_mmap_area, node);
+                printf("\t-> right [0x%.8x,0x%.8x]\n", p__->_start, p__->_end);
         }
 
         printf("\t-> max %.8x\n", n->node.max);

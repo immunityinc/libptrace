@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_NTDLL_H
-#define __PT_WINDOWS_API_NTDLL_H
+#ifndef PT_WINDOWS_API_NTDLL_H
+#define PT_WINDOWS_API_NTDLL_H
 
 #include <windows.h>
 #include "ntdbg.h"
@@ -90,4 +90,4 @@ utf8_t *pt_windows_api_nt_query_object_name(HANDLE);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_NTDLL_H */

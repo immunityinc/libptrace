@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __LIBPTRACE_WINDOWS_PATHNAME_H
-#define __LIBPTRACE_WINDOWS_PATHNAME_H
+#ifndef PT_WINDOWS_PATHNAME_INTERNAL_H
+#define PT_WINDOWS_PATHNAME_INTERNAL_H
 
 #include <windows.h>
 
@@ -57,4 +57,4 @@ utf8_t* pathname_nt_to_dos(const utf8_t *lpathname);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_PATHNAME_INTERNAL_H */

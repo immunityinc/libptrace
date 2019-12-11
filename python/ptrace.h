@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PYTHON_PTRACE_H
-#define __PYTHON_PTRACE_H
+#ifndef PYPT_PTRACE_INTERNAL_H
+#define PYPT_PTRACE_INTERNAL_H
 
 #include "process.h"
 #include "../src/core.h"
@@ -50,4 +50,4 @@ extern PyObject *pypt_exception;
 
 PyObject *pypt_process_exec(struct pypt_process *, PyObject *);
 
-#endif
+#endif	/* !PYPT_PTRACE_INTERNAL_H */

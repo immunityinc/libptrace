@@ -51,7 +51,7 @@
 #include "thread.h"
 
 static inline void
-__x86_descriptor_translate(struct pt_x86_descriptor *desc, LDT_ENTRY *entry)
+x86_descriptor_translate_(struct pt_x86_descriptor *desc, LDT_ENTRY *entry)
 {
 	assert(desc != NULL);
 	assert(entry != NULL);
@@ -72,7 +72,7 @@ __x86_descriptor_translate(struct pt_x86_descriptor *desc, LDT_ENTRY *entry)
 }
 
 static inline void
-__x86_descriptor_to_ldt(struct pt_x86_descriptor *desc, LDT_ENTRY *entry)
+x86_descriptor_to_ldt_(struct pt_x86_descriptor *desc, LDT_ENTRY *entry)
 {
 	assert(desc != NULL);
 	assert(entry != NULL);
@@ -107,7 +107,7 @@ int pt_thread_x86_ldt_entry_get(struct pt_thread *thread,
 	if (ret == 0)
 		return -1;
 
-	__x86_descriptor_translate(descriptor, &entry);
+	x86_descriptor_translate_(descriptor, &entry);
 
 	return 0;
 }
@@ -137,7 +137,7 @@ int pt_thread_x86_ldt_entry_set(struct pt_thread *thread,
 	entry.selector = index << 3;
 //	entry.size = 8;
 	entry.size = 0;
-//	__x86_descriptor_to_ldt(descriptor, &entry.entry);
+//	x86_descriptor_to_ldt_(descriptor, &entry.entry);
 
 	ret = NtSetInformationProcess(pt_windows_process_handle_get(thread->process),
 	                              ProcessLdtInformation, &entry, sizeof entry);
@@ -164,7 +164,7 @@ int pt_thread_x86_gdt_entry_get(struct pt_thread *thread,
 	if (ret == 0)
 		return -1;
 
-	__x86_descriptor_translate(descriptor, &entry);
+	x86_descriptor_translate_(descriptor, &entry);
 
 	return 0;
 }

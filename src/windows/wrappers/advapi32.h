@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_API_ADVAPI32_H
-#define __PT_WINDOWS_API_ADVAPI32_H
+#ifndef PT_WINDOWS_API_ADVAPI32_H
+#define PT_WINDOWS_API_ADVAPI32_H
 
 #include <windows.h>
 #include <libptrace/charset.h>
@@ -59,4 +59,4 @@ int pt_windows_api_adjust_token_privileges(HANDLE, BOOL, PTOKEN_PRIVILEGES,
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_API_ADVAPI32_H */

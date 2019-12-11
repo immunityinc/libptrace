@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_ITERATOR_INTERNAL_H
-#define __PT_ITERATOR_INTERNAL_H
+#ifndef PT_ITERATOR_INTERNAL_H
+#define PT_ITERATOR_INTERNAL_H
 
 #include <libptrace/process.h>
 #include "avl.h"
@@ -71,4 +71,4 @@ struct pt_iterator_breakpoint
 	struct avl_node		*an_next;
 };
 
-#endif
+#endif	/* !PT_ITERATOR_INTERNAL_H */

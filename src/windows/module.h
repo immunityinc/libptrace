@@ -40,8 +40,8 @@
  * Author: Ronald Huizer <ronald@immunityinc.com>
  *
  */
-#ifndef __PT_WINDOWS_MODULE_INTERNAL_H
-#define __PT_WINDOWS_MODULE_INTERNAL_H
+#ifndef PT_WINDOWS_MODULE_INTERNAL_H
+#define PT_WINDOWS_MODULE_INTERNAL_H
 
 #include "../module.h"
 
@@ -72,4 +72,4 @@ int               pt_windows_module_destroy(struct pt_module *module);
 };
 #endif
 
-#endif
+#endif	/* !PT_WINDOWS_MODULE_INTERNAL_H */
